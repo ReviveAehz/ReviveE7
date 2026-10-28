@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel del centro de acopio | [Nombre]</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&family=Actor&family=Belanosima:wght@400;600;700&family=Linden+Hill:ital@0;1&family=Roboto+Serif:opsz,wght@8..144,400;8..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="app">
+
+  <!-- ============ BARRA LATERAL IZQUIERDA ============ -->
+  <aside class="lateral">
+    <a href="centro.html" class="logo-lat">[Nombre]</a>
+    <div class="usuario">
+      <div class="avatar" id="c-ini">CA</div>
+      <div><h4 id="c-nombre-lat">[Nombre del centro]</h4><small>Centro de acopio</small></div>
+    </div>
+    <nav aria-label="Cuenta">
+      <button data-dlg="d-editar">Editar datos del establecimiento</button>
+      <a href="index.html">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <!-- ============ PÁGINA PRINCIPAL ============ -->
+  <main class="principal">
+    <h1>Hola, <span id="c-nombre">[Nombre del centro]</span></h1>
+    <p class="relleno">[Mensaje de bienvenida para el centro.]</p>
+    <p class="aviso" id="aviso-verif" hidden>Tu cuenta está en revisión. Aún no apareces en la lista de centros que ven los donantes.</p>
+
+    <!-- Resumen -->
+    <div class="resumen">
+      <div class="tarjeta stat"><strong id="s-art">0</strong>donaciones de artículos por confirmar</div>
+      <div class="tarjeta stat"><strong id="s-din">0</strong>transferencias por confirmar</div>
+      <div class="tarjeta stat"><strong id="s-don">0</strong>donantes en tu bandeja</div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" class="activo" data-tab="p-bandeja">Bandeja de usuarios</button>
+      <button role="tab" data-tab="p-din">Transferencias</button>
+      <button role="tab" data-tab="p-motivar">Motivar a usuarios</button>
+      <button role="tab" data-tab="p-datos">Mi establecimiento</button>
+    </div>
+
+    <!-- Bandeja de usuarios -->
+    <div class="panel" id="p-bandeja">
+      <h2>Bandeja de usuarios</h2>
+      <p class="relleno">Aquí están los donantes que han elegido tu centro. Selecciona uno para ver sus donaciones, confirmarlas o quitarlo de tu bandeja.</p>
+      <input type="search" id="ban-buscar" class="buscar" placeholder="Buscar donante…" aria-label="Buscar donante">
+      <p class="vacio" id="ban-vacio">Aún no hay donantes en tu bandeja.</p>
+      <div class="grid g2" id="ban-lista"></div>
+    </div>
+
+    <!-- Transferencias -->
+    <div class="panel" id="p-din" hidden>
+      <h2>Transferencias</h2>
+      <p class="relleno">Revisa tu estado de cuenta y confirma cada transferencia usando la referencia y el monto. La plataforma no puede comprobar por sí sola que el dinero llegó.</p>
+      <p class="relleno">Total confirmado este año: <strong id="din-total">$0.00</strong></p>
+      <p class="vacio" id="din-vacio">Aún no hay transferencias registradas.</p>
+      <div id="din-lista"></div>
+    </div>
+
+    <!-- Motivar a usuarios -->
+    <div class="panel" id="p-motivar" hidden>
+      <h2>Motivar a usuarios</h2>
+      <p class="relleno">Muestra a un donante cómo se usó lo que donó. Elige a alguien que ya haya donado, sube hasta 5 fotos y escribe un mensaje de agradecimiento.</p>
+      <form id="f-motivar" class="form-grid">
+        <div class="campo"><label for="mo-donante">Donante</label><select id="mo-donante" required></select></div>
+        <div class="campo"><label for="mo-don">Donación relacionada</label><select id="mo-don" required></select></div>
+        <div class="campo completo">
+          <label for="mo-fotos">Fotos (máximo 5)</label>
+          <input id="mo-fotos" type="file" accept="image/*" multiple>
+          <small class="ayuda" id="mo-fcuenta">0 de 5 fotos</small>
+          <div class="miniaturas" id="mo-prev"></div>
+        </div>
+        <div class="campo completo">
+          <label for="mo-desc">Mensaje (máximo 150 palabras)</label>
+          <textarea id="mo-desc" required></textarea>
+          <small class="ayuda" id="mo-cuenta">0 / 150 palabras</small>
+        </div>
+        <label class="check completo"><input type="checkbox" id="mo-aut" required> Confirmo que tengo autorización de las personas que aparecen, o de sus tutores si son menores. No incluyo nombres, escuela ni dirección.</label>
+        <button class="btn completo" type="submit">Enviar al donante</button>
+      </form>
+      <h3>Enviados</h3>
+      <p class="vacio" id="mo-vacio">Aún no has enviado mensajes.</p>
+      <div id="mo-lista"></div>
+    </div>
+
+    <!-- Mi establecimiento (ver datos) -->
+    <div class="panel" id="p-datos" hidden>
+      <div class="panel-cab">
+        <h2>Mi establecimiento</h2>
+        <button class="btn azul" data-dlg="d-editar">Editar datos</button>
+      </div>
+      <div class="info-centro">
+        <div class="tarjeta">
+          <h3 id="v-nombre">[Nombre del centro]</h3>
+          <p><strong>Tipo de sede:</strong> <span id="v-tipo">—</span></p>
+          <p><strong>Ubicación:</strong> <span id="v-ubic">—</span></p>
+          <p><strong>Horario de recepción:</strong> <span id="v-horario">—</span></p>
+          <h4>Datos de contacto</h4>
+          <ul class="contactos" id="v-contacto"></ul>
+        </div>
+        <div class="tarjeta">
+          <h4>Descripción</h4>
+          <p id="v-desc">—</p>
+          <h4>Insumos más urgentes</h4>
+          <ul class="necesita" id="v-urg"></ul>
+        </div>
+      </div>
+      <h3>Imágenes</h3>
+      <p class="vacio" id="v-imgs-vacio">Aún no has agregado imágenes.</p>
+      <div class="galeria" id="v-imgs"></div>
+    </div>
+  </main>
+
+  <p class="gracias" id="gracias" role="status" hidden></p>
+
+  <!-- ============ VENTANA: EDITAR DATOS DEL ESTABLECIMIENTO ============ -->
+  <dialog id="d-editar" class="ancho" aria-labelledby="t-editar">
+    <div class="modal-cab"><h3 id="t-editar">Editar datos del establecimiento</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
+    <form class="modal-cuerpo form-grid" id="f-editar">
+
+      <h4 class="subtitulo">Datos generales</h4>
+      <div class="campo completo"><label for="e-nombre">Nombre del establecimiento</label><input id="e-nombre" required></div>
+      <div class="campo completo"><label for="e-ubic">Ubicación</label><input id="e-ubic" placeholder="Calle, número, colonia, ciudad, estado" required></div>
+      <div class="campo">
+        <label for="e-tipo">Tipo de sede</label>
+        <select id="e-tipo" required>
+          <option value="">Selecciona una opción</option>
+          <option>Albergue</option><option>Casa hogar</option><option>Comedor comunitario</option>
+          <option>Asociación civil</option><option>Iglesia o parroquia</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="campo"><label for="e-horario">Horario de recepción</label><input id="e-horario" placeholder="Ej. Lunes a viernes, 9:00 a 17:00" required></div>
+
+      <h4 class="subtitulo">Datos de contacto <small class="ayuda" id="e-ccuenta">(mínimo 2)</small></h4>
+      <div class="campo"><label for="e-tel">Número telefónico</label><input id="e-tel" type="tel"></div>
+      <div class="campo"><label for="e-correo">Correo electrónico</label><input id="e-correo" type="email"></div>
+      <div class="campo"><label for="e-fb">Facebook</label><input id="e-fb" placeholder="Enlace o usuario"></div>
+      <div class="campo"><label for="e-ig">Instagram</label><input id="e-ig" placeholder="Enlace o usuario"></div>
+      <div class="campo"><label for="e-tk">TikTok</label><input id="e-tk" placeholder="Enlace o usuario"></div>
+      <div class="campo"><label for="e-x">X</label><input id="e-x" placeholder="Enlace o usuario"></div>
+      <div class="campo completo"><label for="e-web">Página web</label><input id="e-web" type="url" placeholder="https://"></div>
+
+      <h4 class="subtitulo">Imágenes</h4>
+      <div class="campo completo">
+        <label for="e-imgs">Agregar imágenes (máximo 10)</label>
+        <input id="e-imgs" type="file" accept="image/*" multiple>
+        <small class="ayuda" id="e-icuenta">0 de 10 imágenes</small>
+        <div class="miniaturas" id="e-prev"></div>
+      </div>
+
+      <h4 class="subtitulo">Descripción</h4>
+      <div class="campo completo">
+        <label for="e-desc">Describe tu establecimiento (máximo 500 palabras)</label>
+        <textarea id="e-desc" style="min-height:140px"></textarea>
+        <small class="ayuda" id="e-dcuenta">0 / 500 palabras</small>
+      </div>
+
+      <h4 class="subtitulo">Insumos más urgentes</h4>
+      <div class="campo completo">
+        <label for="e-urg">Lo que necesitas ahora (uno por línea)</label>
+        <textarea id="e-urg" style="min-height:90px" placeholder="Ej.&#10;Pañales&#10;Cobijas&#10;Arroz"></textarea>
+      </div>
+
+      <h4 class="subtitulo">Donaciones en dinero (opcional)</h4>
+      <div class="campo"><label for="e-banco">Banco</label><input id="e-banco"></div>
+      <div class="campo"><label for="e-titular">Titular de la cuenta</label><input id="e-titular"></div>
+      <div class="campo completo"><label for="e-clabe">CLABE</label><input id="e-clabe" inputmode="numeric" pattern="[0-9]{18}" maxlength="18" placeholder="18 dígitos" title="La CLABE tiene 18 dígitos"></div>
+
+      <div class="pf-botones">
+        <button class="btn" type="submit">Guardar cambios</button>
+        <button class="btn claro" type="button" id="e-cancelar">Cancelar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ============ VENTANA: DETALLE DE UN DONANTE ============ -->
+  <dialog id="d-usuario" class="ancho" aria-labelledby="t-usuario">
+    <div class="modal-cab"><h3 id="t-usuario">Donante</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
+    <div class="modal-cuerpo">
+      <div id="usr-cuerpo"></div>
+      <div class="botones">
+        <button class="btn" id="usr-confirmar">Confirmar donación</button>
+        <button class="btn claro" id="usr-eliminar">Eliminar de mi bandeja</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="centro.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Centros de acopio | [Nombre]</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&family=Actor&family=Belanosima:wght@400;600;700&family=Linden+Hill:ital@0;1&family=Roboto+Serif:opsz,wght@8..144,400;8..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="nav">
+    <div class="contenedor nav-in">
+      <a href="index.html" class="logo" aria-label="Ir al inicio">
+        <span class="logo-marca" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        </span>
+        [Nombre]
+      </a>
+      <nav aria-label="Principal">
+        <ul id="menu">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="index.html#como-funciona">Cómo funciona</a></li>
+          <li><a href="centros.html">Centros de acopio</a></li>
+          <li><a href="index.html#contacto">Contacto</a></li>
+        </ul>
+      </nav>
+      <div class="nav-acciones">
+        <a class="btn" href="index.html#usuarios">Iniciar sesión</a>
+        <button class="menu-btn" aria-expanded="false" aria-controls="menu">Menú</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="contenedor">
+        <h1>Centros de acopio</h1>
+        <p class="lead relleno">[Texto de introducción: conoce los centros que forman parte de la plataforma y consulta qué necesitan.]</p>
+      </div>
+    </section>
+
+    <section id="centros">
+      <div class="contenedor">
+        <div class="filtros">
+          <div class="campo"><label for="f-buscar">Buscar por nombre, ubicación o insumo</label><input type="search" id="f-buscar" placeholder="Ej. pañales, Guadalajara, albergue…"></div>
+          <div class="campo"><label for="f-tipo">Tipo de sede</label><select id="f-tipo"><option value="">Todos los tipos</option></select></div>
+        </div>
+        <p class="relleno" id="f-cuenta" role="status"></p>
+        <p class="vacio" id="f-vacio" hidden>No encontramos centros con esa búsqueda.</p>
+        <div class="grid g2" id="lista"></div>
+      </div>
+    </section>
+
+    <section class="fondo-azul">
+      <div class="contenedor invitacion">
+        <h2>¿Quieres ayudar?</h2>
+        <p class="relleno">[Para donar necesitas una cuenta de donante. Es gratis y toma un minuto.]</p>
+        <a class="btn azul" href="index.html#usuarios">Crear cuenta o iniciar sesión</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <p class="pie-legal">© 2026 [Nombre]. Proyecto del Equipo 7. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="centros.js"></script>
+</body>
+</html>

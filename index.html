@@ -1,11 +1,546 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revive | Dona fácil, ayuda más</title>
+  <meta name="description" content="[Descripción breve de la plataforma para buscadores]">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&family=Actor&family=Belanosima:wght@400;600;700&family=Linden+Hill:ital@0;1&family=Roboto+Serif:opsz,wght@8..144,400;8..144,600;8..144,700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <h1>Hola MUNDOOOOOOOOO</h1>
+
+  <!-- ===================== NAVEGACIÓN ===================== -->
+  <header class="nav">
+    <div class="contenedor nav-in">
+      <a href="#inicio" class="logo" aria-label="Ir al inicio">
+        <span class="logo-marca" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        </span>
+        Revive
+      </a>
+
+      <nav aria-label="Principal">
+        <ul id="menu">
+          <li><a href="#nosotros">Nosotros</a></li>
+          <li><a href="#donar">Qué donar</a></li>
+          <li><a href="#como-funciona">Cómo funciona</a></li>
+          <li><a href="#usuarios">Participa</a></li>
+          <li><a href="centros.html">Centros de acopio</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-acciones">
+        <button class="btn" data-abrir-login>Iniciar sesión</button>
+        <button class="menu-btn" aria-expanded="false" aria-controls="menu">Menú</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="inicio">
+      <div class="contenedor hero-grid">
+        <div>
+          <h1>Dona <span class="rota" id="rota">ropa</span> y mira a dónde llega</h1>
+          <p class="lead">Revive conecta a personas que quieren ayudar con centros de acopio verificados. Arma tu inventario, elige a quién donarle y recibe la confirmación y fotos de cómo se usó lo que diste.</p>
+          <div class="hero-cta">
+            <button class="btn azul" data-abrir-registro>Quiero donar</button>
+            <a class="btn claro" href="#como-funciona">Cómo funciona</a>
+          </div>
+          <ul class="confianza">
+            <li>Centros verificados</li>
+            <li>Cada entrega confirmada</li>
+            <li>Mira cómo se usó tu donación</li>
+          </ul>
+        </div>
+
+        <aside class="hero-card" aria-label="Ejemplo del seguimiento de una donación">
+          <span class="cinta">Ejemplo</span>
+          <h3>Tu donación</h3>
+          <p class="hc-sub">Cobijas × 4 → [Nombre del centro]</p>
+          <ol class="ruta">
+            <li>Agregada a tu inventario</li>
+            <li>Entrega programada</li>
+            <li>Confirmada por el centro</li>
+            <li class="actual">¡Te compartieron cómo se usó!</li>
+          </ol>
+          <div class="botones"><span class="badge ok">Entregado</span><span class="badge listo">★ Primera donación</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===================== DEFINICIÓN ===================== -->
+    <section id="nosotros">
+      <div class="contenedor split">
+        <div>
+          <h2>¿Qué es Revive?</h2>
+          <p>Revive es una plataforma que facilita donar y le da seguimiento a cada donación. Conecta a personas que quieren ayudar con centros de acopio (albergues, casas hogar, comedores y más) para que lo que se dona llegue a quien lo necesita.</p>
+          <p>Los donantes organizan lo que quieren dar en un inventario y eligen a qué centro entregarlo. Los centros confirman lo que reciben y comparten cómo se usó, para que cada persona vea el resultado de su ayuda.</p>
+          <p>Nació como un proyecto del Equipo 7 con una idea sencilla: donar debería ser fácil, claro y motivante.</p>
+        </div>
+        <div class="flujo" role="img" aria-label="Esquema: el donante dona a través de Revive a un centro de acopio, y el centro responde con confirmación, fotos y gracias">
+          <svg viewBox="0 0 420 300" style="font-family:var(--f-h3);font-size:16px;font-weight:600">
+            <g style="stroke:var(--negro);stroke-width:2.5">
+              <circle cx="70" cy="110" r="52" style="fill:var(--azul-300)"/>
+              <circle cx="210" cy="110" r="52" style="fill:var(--azul-500)"/>
+              <circle cx="350" cy="110" r="52" style="fill:var(--rosa)"/>
+              <path d="M122 110H152M262 110H292" fill="none"/>
+              <path d="M350 168C350 250 70 250 70 168" fill="none" stroke-dasharray="7 7"/>
+            </g>
+            <g style="fill:var(--negro)">
+              <polygon points="150,102 162,110 150,118"/><polygon points="290,102 302,110 290,118"/><polygon points="62,180 70,166 78,180"/>
+            </g>
+            <g style="fill:var(--negro)" text-anchor="middle">
+              <text x="70" y="115">Donante</text><text x="210" y="115">Revive</text>
+              <text x="350" y="106">Centro</text><text x="350" y="126">de acopio</text>
+              <text x="210" y="266">Confirmación, fotos y gracias</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== QUÉ PUEDES DONAR ===================== -->
+    <section class="fondo-azul" id="donar">
+      <div class="contenedor">
+        <div class="encabezado">
+          <h2>Qué puedes donar</h2>
+          <p>Elige una categoría para ver ejemplos y consejos. También puedes donar dinero por transferencia directa a la cuenta del centro.</p>
+        </div>
+        <div class="tabs" id="cat-botones" role="group" aria-label="Categorías de donación"></div>
+        <div class="cat-panel" id="cat-panel" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ===================== OBJETIVO / MISIÓN / VISIÓN ===================== -->
+    <section id="mision">
+      <div class="contenedor">
+        <div class="encabezado">
+          <h2>Lo que nos mueve</h2>
+        </div>
+        <div class="grid g3 mvo">
+          <article class="tarjeta">
+            <h3>Objetivo</h3>
+            <p>Motivar y facilitar las donaciones, conectando a donantes con centros de acopio y dando un seguimiento claro a cada una.</p>
+          </article>
+          <article class="tarjeta">
+            <h3>Misión</h3>
+            <p>Ofrecer una plataforma sencilla y transparente donde cualquier persona pueda organizar sus donaciones, entregarlas a centros verificados y ver el impacto de su ayuda.</p>
+          </article>
+          <article class="tarjeta">
+            <h3>Visión</h3>
+            <p>Ser la comunidad de donación de confianza, donde ayudar sea un hábito y ningún centro se quede sin lo que necesita.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VALORES ===================== -->
+    <section class="fondo-azul" id="valores">
+      <div class="contenedor">
+        <div class="encabezado">
+          <h2>Nuestros valores</h2>
+          <p>Lo que guía cada decisión que tomamos en Revive.</p>
+        </div>
+        <div class="grid g4">
+          <article class="tarjeta">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+            <h4>Solidaridad</h4>
+            <p>Creemos que ayudar es mejor cuando es fácil y se hace en comunidad.</p>
+          </article>
+          <article class="tarjeta">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <h4>Transparencia</h4>
+            <p>Cada donación la confirma el centro y se puede seguir de principio a fin.</p>
+          </article>
+          <article class="tarjeta">
+            <div class="icono"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15 14.5c.6-.3 1.3-.5 2-.5 2.2 0 4 1.8 4 4"/></svg></div>
+            <h4>Comunidad</h4>
+            <p>Conectamos a donantes y centros para que la ayuda se sienta cercana.</p>
+          </article>
+          <article class="tarjeta">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.8.8-5 4.7 1.3 6.8L12 17.3 6 20.6l1.3-6.8-5-4.7 6.8-.8z"/></svg></div>
+            <h4>Compromiso</h4>
+            <p>Cuidamos los datos, la dignidad de las personas y la confianza de quien dona.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== POR QUÉ REVIVE ===================== -->
+    <section id="funciones">
+      <div class="contenedor">
+        <div class="encabezado">
+          <h2>Todo para donar con confianza</h2>
+          <p>Herramientas pensadas para que donar sea simple y se note el resultado.</p>
+        </div>
+        <div class="grid g3">
+          <article class="tarjeta func">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></div>
+            <h3>Tu inventario</h3>
+            <p>Registra lo que quieres donar por categoría, con cantidad y condición. Edítalo cuando quieras.</p>
+          </article>
+          <article class="tarjeta func">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+            <h3>Elige tu centro</h3>
+            <p>Compara centros, mira qué necesitan con urgencia y dona donde más se necesita.</p>
+          </article>
+          <article class="tarjeta func">
+            <div class="icono"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></div>
+            <h3>Seguimiento real</h3>
+            <p>Cada artículo pasa de pendiente a entregado, y lo confirma el propio centro.</p>
+          </article>
+          <article class="tarjeta func">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.8.8-5 4.7 1.3 6.8L12 17.3 6 20.6l1.3-6.8-5-4.7 6.8-.8z"/></svg></div>
+            <h3>Rachas y logros</h3>
+            <p>Gana rachas por donar semana tras semana y desbloquea logros que celebran tu constancia.</p>
+          </article>
+          <article class="tarjeta func">
+            <div class="icono"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <h3>Dona dinero</h3>
+            <p>Transfiere directo a la cuenta del centro con una referencia única para identificar tu aporte.</p>
+          </article>
+          <article class="tarjeta func">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
+            <h3>Mira el resultado</h3>
+            <p>Los centros te comparten fotos y un mensaje de cómo se usó tu donación.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TIPOS DE USUARIO ===================== -->
+    <section class="fondo-azul" id="usuarios">
+      <div class="contenedor">
+        <div class="encabezado">
+          <h2>¿Cómo quieres participar?</h2>
+          <p>Revive tiene tres formas de participar. Elige la tuya.</p>
+        </div>
+
+        <div class="grid g3">
+          <article class="tarjeta perfil">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <h3>Visitante</h3>
+            <p>Explora Revive sin registrarte.</p>
+            <ul>
+              <li>Conoce cómo funciona la plataforma</li>
+              <li>Mira los centros de acopio y su ubicación</li>
+              <li>Consulta qué necesita cada centro</li>
+            </ul>
+            <a class="btn claro" href="centros.html">Ver centros de acopio</a>
+          </article>
+
+          <article class="tarjeta perfil donante">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M20 12v9H4v-9"/><path d="M2 7h20v5H2z"/><path d="M12 21V7"/><path d="M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z"/></svg></div>
+            <h3>Donante</h3>
+            <p>Organiza y da seguimiento a tus donaciones.</p>
+            <ul>
+              <li>Crea tu inventario de artículos</li>
+              <li>Elige qué donar y a qué centro</li>
+              <li>Dona artículos o dinero</li>
+              <li>Gana rachas y logros</li>
+            </ul>
+            <button class="btn" data-abrir-registro>Crear cuenta de donante</button>
+            <button class="enlace" data-abrir-login>Ya tengo cuenta</button>
+          </article>
+
+          <article class="tarjeta perfil centro">
+            <div class="icono"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+            <h3>Centro de acopio</h3>
+            <p>Administra tu establecimiento y a tus donantes.</p>
+            <ul>
+              <li>Configura tu establecimiento</li>
+              <li>Publica tus insumos más urgentes</li>
+              <li>Confirma entregas y transferencias</li>
+              <li>Comparte cómo se usó cada donación</li>
+            </ul>
+            <button class="btn" data-abrir-registro-centro>Registrar mi centro</button>
+            <button class="enlace" data-abrir-login>Ya tengo cuenta</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CÓMO FUNCIONA ===================== -->
+    <section class="fondo-oscuro" id="como-funciona">
+      <div class="contenedor">
+        <div class="encabezado">
+          <h2>Así de fácil funciona</h2>
+          <p>Cuatro pasos, según cómo quieras participar.</p>
+        </div>
+        <div class="tabs" role="group" aria-label="Elige tu perfil">
+          <button class="activo" data-flujo="donante" aria-pressed="true">Soy donante</button>
+          <button data-flujo="centro" aria-pressed="false">Soy centro de acopio</button>
+        </div>
+        <ol class="pasos" id="flujo-donante">
+          <li><h4>Crea tu cuenta</h4><p>Regístrate con tus datos básicos. Toma solo un par de minutos.</p></li>
+          <li><h4>Arma tu inventario</h4><p>Agrega lo que quieres donar: elige la categoría, el tipo de artículo y la cantidad.</p></li>
+          <li><h4>Elige a quién donar</h4><p>Selecciona un centro, marca los artículos y programa la fecha y hora de entrega.</p></li>
+          <li><h4>Entrega y recibe confirmación</h4><p>El centro confirma lo que recibe y puede compartirte cómo se usó.</p></li>
+        </ol>
+        <ol class="pasos" id="flujo-centro" hidden>
+          <li><h4>Registra tu centro</h4><p>Llena tus datos y sube tu comprobante de domicilio e identificación para verificarte.</p></li>
+          <li><h4>Configura tu establecimiento</h4><p>Agrega ubicación, tipo de sede, contacto, imágenes, descripción e insumos urgentes.</p></li>
+          <li><h4>Recibe donantes</h4><p>Revisa tu bandeja de usuarios y confirma entregas y transferencias.</p></li>
+          <li><h4>Cuenta el resultado</h4><p>Envía fotos y un mensaje a quien donó para agradecer y mostrar el impacto.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== TRANSPARENCIA ===================== -->
+    <section class="fondo-azul" id="transparencia">
+      <div class="contenedor split">
+        <div>
+          <h2>Mira cómo se usó tu donación</h2>
+          <p>Los centros pueden enviarte fotos y un mensaje para mostrarte el resultado de tu ayuda. Cuidamos esto con reglas claras:</p>
+          <ul class="lista-check">
+            <li>Las fotos se comparten solo con autorización de las personas o de sus tutores.</li>
+            <li>No se publican nombres, escuelas ni direcciones de menores.</li>
+            <li>Puedes reportar cualquier foto y deja de mostrarse al instante.</li>
+          </ul>
+        </div>
+        <article class="tarjeta reporte ej">
+          <span class="cinta">Ejemplo</span>
+          <div class="foto-rep" role="img" aria-label="Espacio para foto de ejemplo">[Foto del centro]</div>
+          <h3>[Nombre del centro]</h3>
+          <p class="meta">Tu donación: Cobijas × 4</p>
+          <p>Gracias a tu donación, esta semana pudimos repartir cobijas a doce familias. ¡Gracias por ser parte!</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== REVIVE EN NÚMEROS ===================== -->
+    <section id="impacto">
+      <div class="contenedor">
+        <div class="encabezado">
+          <h2>Revive en números</h2>
+          <p>Lo que ofrece la plataforma desde el primer día. Cuando tengamos datos reales, aquí mostraremos nuestro impacto.</p>
+        </div>
+        <!-- Cuando tengan cifras reales, cambia el número de data-n -->
+        <div class="impacto">
+          <div><strong data-n="8">0</strong>categorías de artículos para donar</div>
+          <div><strong data-n="6">0</strong>tipos de centros de acopio</div>
+          <div><strong data-n="2">0</strong>formas de donar: artículos o dinero</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PREGUNTAS FRECUENTES ===================== -->
+    <section class="fondo-azul" id="faq">
+      <div class="contenedor" style="max-width: 820px;">
+        <div class="encabezado"><h2>Preguntas frecuentes</h2></div>
+        <details><summary>¿Qué artículos puedo donar?</summary><p>Ropa, calzado, útiles escolares, artículos para bebé, productos de higiene y limpieza, alimentos y juguetes. Todo debe estar limpio y en buen estado; los alimentos, con caducidad vigente. Cada centro publica además lo que necesita con más urgencia.</p></details>
+        <details><summary>¿Tiene costo usar la plataforma?</summary><p>Crear tu cuenta y usar Revive para donar no tiene costo para los donantes.</p></details>
+        <details><summary>¿Dónde están los centros de acopio?</summary><p>En la sección <a href="centros.html">Centros de acopio</a> puedes ver todos los centros con su ubicación, horario y lo que necesitan. Al donar, tú eliges a cuál entregarle.</p></details>
+        <details><summary>¿Cómo sé que mi donación llegó?</summary><p>El centro confirma dentro de la plataforma lo que recibe, y tú ves el estado de tus artículos: Pendiente, Listo para entregar o Entregado. También pueden compartirte fotos y un mensaje de cómo se usó.</p></details>
+        <details><summary>¿Cómo dono dinero?</summary><p>Por transferencia directa a la cuenta del centro. Revive te muestra los datos y una referencia única; después registras tu transferencia y el centro la confirma cuando la recibe.</p></details>
+        <details><summary>¿Cómo verifican a los centros?</summary><p>Cada centro envía un comprobante de domicilio y una identificación de su responsable, y se revisan antes de activar la cuenta.</p></details>
+        <details><summary>¿Puedo donar sin crear una cuenta?</summary><p>Puedes explorar los centros sin registrarte. Para donar necesitas una cuenta: así llevas tu inventario, ves el seguimiento y ganas rachas y logros.</p></details>
+        <details><summary>¿Mis datos están protegidos?</summary><p>Solo pedimos los datos necesarios. Los datos bancarios de los centros únicamente se muestran a donantes con sesión iniciada.</p></details>
+      </div>
+    </section>
+
+    <!-- ===================== EQUIPO ===================== -->
+    <section class="fondo-rosa" id="equipo">
+      <div class="contenedor">
+        <div class="encabezado">
+          <h2>Equipo 7</h2>
+          <p>Somos el Equipo 7 y creamos Revive para que donar sea fácil, claro y motivante.</p>
+        </div>
+        <div class="grid g4">
+          <article class="persona tarjeta"><div class="avatar">AA</div><h4>Asael Anteliz Martínez</h4><p class="relleno">[Rol]</p></article>
+          <article class="persona tarjeta"><div class="avatar">ME</div><h4>Mairely Itzel Espinoza Solís</h4><p class="relleno">[Rol]</p></article>
+          <article class="persona tarjeta"><div class="avatar">GH</div><h4>Guillermo Adrián Hernández Villasana</h4><p class="relleno">[Rol]</p></article>
+          <article class="persona tarjeta"><div class="avatar">PZ</div><h4>Patricio Antonio Zepeda Morales</h4><p class="relleno">[Rol]</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CONTACTO ===================== -->
+    <section class="fondo-azul" id="contacto">
+      <div class="contenedor contacto-grid">
+        <div>
+          <h2>Contáctanos</h2>
+          <p>¿Tienes dudas, ideas o quieres sumar a tu centro? Escríbenos y te respondemos lo antes posible.</p>
+          <ul class="datos-contacto">
+            <li><strong>Correo</strong>[correo@ejemplo.com]</li>
+            <li><strong>Teléfono</strong>[+52 00 0000 0000]</li>
+            <li><strong>Centros de acopio</strong>La dirección y el horario de cada centro están en la sección <a href="centros.html">Centros de acopio</a>.</li>
+            <li><strong>Redes sociales</strong><a href="#">[Facebook]</a> · <a href="#">[Instagram]</a> · <a href="#">[X / Twitter]</a></li>
+          </ul>
+        </div>
+
+        <form class="tarjeta" action="#" method="post">
+          <div class="campo"><label for="c-nombre">Nombre</label><input id="c-nombre" name="nombre" type="text" autocomplete="name" required></div>
+          <div class="campo"><label for="c-correo">Correo electrónico</label><input id="c-correo" name="correo" type="email" autocomplete="email" required></div>
+          <div class="campo">
+            <label for="c-asunto">Asunto</label>
+            <select id="c-asunto" name="asunto">
+              <option>Quiero donar</option>
+              <option>Quiero registrar mi centro de acopio</option>
+              <option>Tengo una duda</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="campo"><label for="c-mensaje">Mensaje</label><textarea id="c-mensaje" name="mensaje" required></textarea></div>
+          <button class="btn" type="submit">Enviar mensaje</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="pie">
+    <div class="contenedor">
+      <div class="pie-grid">
+        <div>
+          <h4>Revive</h4>
+          <p>Dona fácil, ayuda más.</p>
+        </div>
+        <div>
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="#nosotros">Nosotros</a></li>
+            <li><a href="#donar">Qué donar</a></li>
+            <li><a href="#como-funciona">Cómo funciona</a></li>
+            <li><a href="centros.html">Centros de acopio</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Ayuda</h4>
+          <ul>
+            <li><a href="#faq">Preguntas frecuentes</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="#">Aviso de privacidad</a></li>
+            <li><a href="#">Términos y condiciones</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Síguenos</h4>
+          <ul>
+            <li><a href="#">[Facebook]</a></li>
+            <li><a href="#">[Instagram]</a></li>
+            <li><a href="#">[X / Twitter]</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="pie-legal">© 2026 Revive. Proyecto del Equipo 7. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- ===================== MODAL: INICIAR SESIÓN ===================== -->
+  <dialog id="login" aria-labelledby="login-titulo">
+    <div class="modal-cab">
+      <h3 id="login-titulo">Iniciar sesión</h3>
+      <button type="button" data-cerrar-login aria-label="Cerrar">&times;</button>
+    </div>
+    <form class="modal-cuerpo" id="form-login" action="donante.html" method="get">
+      <div class="roles" role="radiogroup" aria-label="Tipo de cuenta">
+        <div><input type="radio" id="rol-donante" name="rol" value="donante" checked><label for="rol-donante">Donante</label></div>
+        <div><input type="radio" id="rol-centro" name="rol" value="centro"><label for="rol-centro">Centro de acopio</label></div>
+      </div>
+      <div class="campo"><label for="l-correo">Correo electrónico</label><input id="l-correo" name="correo" type="email" autocomplete="email" required></div>
+      <div class="campo"><label for="l-pass">Contraseña</label><input id="l-pass" name="password" type="password" autocomplete="current-password" required></div>
+      <button class="btn" type="submit" style="width:100%">Entrar</button>
+      <p class="modal-pie">¿Eres donante y no tienes cuenta? <a href="#" id="abrir-registro">Crear cuenta</a></p>
+      <p class="modal-pie">¿Tienes un centro de acopio? <a href="#" id="abrir-registro-centro">Registra tu centro</a></p>
+    </form>
+  </dialog>
+
+  <!-- ===================== MODAL: REGISTRO DE DONANTE ===================== -->
+  <dialog id="registro" class="ancho" aria-labelledby="reg-titulo">
+    <div class="modal-cab">
+      <h3 id="reg-titulo">Crear cuenta de donante</h3>
+      <button type="button" data-cerrar-registro aria-label="Cerrar">&times;</button>
+    </div>
+    <form class="modal-cuerpo form-grid" action="donante.html" method="get">
+      <div class="campo"><label for="r-nombre">Nombre(s)</label><input id="r-nombre" name="nombre" autocomplete="given-name" required></div>
+      <div class="campo"><label for="r-ap">Apellido paterno</label><input id="r-ap" name="apellido_paterno" autocomplete="family-name" required></div>
+      <div class="campo"><label for="r-am">Apellido materno</label><input id="r-am" name="apellido_materno" required></div>
+      <div class="campo"><label for="r-fecha">Fecha de nacimiento</label><input id="r-fecha" name="fecha_nacimiento" type="date" required></div>
+      <div class="campo"><label for="r-correo">Correo electrónico</label><input id="r-correo" name="correo" type="email" autocomplete="email" required></div>
+      <div class="campo"><label for="r-ubic">Ubicación</label><input id="r-ubic" name="ubicacion" placeholder="Ciudad, estado" required></div>
+      <div class="campo"><label for="r-tel">Teléfono (opcional)</label><input id="r-tel" name="telefono" type="tel" autocomplete="tel"></div>
+      <div class="campo"><label for="r-foto">Foto (opcional)</label><input id="r-foto" name="foto" type="file" accept="image/*"></div>
+      <div class="campo"><label for="r-pass">Contraseña</label><input id="r-pass" name="password" type="password" autocomplete="new-password" minlength="8" required></div>
+      <div class="campo"><label for="r-pass2">Confirmar contraseña</label><input id="r-pass2" type="password" autocomplete="new-password" required></div>
+      <button class="btn completo" type="submit">Crear cuenta</button>
+    </form>
+  </dialog>
+
+  <!-- ===================== MODAL: REGISTRO DE CENTRO DE ACOPIO ===================== -->
+  <dialog id="registro-centro" class="ancho" aria-labelledby="rc-titulo">
+    <div class="modal-cab">
+      <h3 id="rc-titulo">Registrar centro de acopio</h3>
+      <button type="button" data-cerrar-centro aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="modal-cuerpo">
+      <form id="form-centro" class="form-grid">
+
+        <h4 class="subtitulo">Datos del establecimiento</h4>
+        <div class="campo completo"><label for="rc-nombre">Nombre del establecimiento</label><input id="rc-nombre" name="establecimiento" required></div>
+        <div class="campo">
+          <label for="rc-tipo">Tipo de centro</label>
+          <select id="rc-tipo" name="tipo" required>
+            <option value="">Selecciona una opción</option>
+            <option>Albergue</option><option>Casa hogar</option><option>Comedor comunitario</option>
+            <option>Asociación civil</option><option>Iglesia o parroquia</option><option>Otro</option>
+          </select>
+        </div>
+        <div class="campo"><label for="rc-horario">Horario de recepción</label><input id="rc-horario" name="horario" placeholder="Ej. Lunes a viernes, 9:00 a 17:00" required></div>
+        <div class="campo completo"><label for="rc-ubic">Ubicación</label><input id="rc-ubic" name="ubicacion" placeholder="Calle, número, colonia, ciudad, estado" autocomplete="street-address" required></div>
+        <div class="campo completo"><label for="rc-desc">Descripción breve (opcional)</label><textarea id="rc-desc" name="descripcion" style="min-height:80px" placeholder="¿A quién atiende tu centro?"></textarea></div>
+        <div class="campo completo"><label for="rc-logo">Logo o foto del establecimiento (opcional)</label><input id="rc-logo" name="logo" type="file" accept="image/*"></div>
+
+        <h4 class="subtitulo">Responsable y contacto</h4>
+        <div class="campo"><label for="rc-resp">Nombre del responsable</label><input id="rc-resp" name="responsable" autocomplete="name" required></div>
+        <div class="campo"><label for="rc-tel">Número telefónico</label><input id="rc-tel" name="telefono" type="tel" autocomplete="tel" required></div>
+        <div class="campo completo"><label for="rc-correo">Correo electrónico</label><input id="rc-correo" name="correo" type="email" autocomplete="email" required></div>
+
+        <h4 class="subtitulo">Verificación</h4>
+        <div class="campo">
+          <label for="rc-domicilio">Comprobante de domicilio</label>
+          <input id="rc-domicilio" name="comprobante_domicilio" type="file" accept="image/*,application/pdf" required>
+          <small class="ayuda">Del establecimiento, de máximo 3 meses.</small>
+        </div>
+        <div class="campo">
+          <label for="rc-ine">Identificación del responsable</label>
+          <input id="rc-ine" name="identificacion" type="file" accept="image/*,application/pdf" required>
+          <small class="ayuda">Solo para verificar tu identidad.</small>
+        </div>
+
+        <h4 class="subtitulo">Donaciones en dinero (opcional)</h4>
+        <p class="relleno completo">Llénalo solo si quieres recibir donaciones por transferencia. Podrás agregarlo o cambiarlo después.</p>
+        <div class="campo"><label for="rc-banco">Banco</label><input id="rc-banco" name="banco"></div>
+        <div class="campo"><label for="rc-titular">Titular de la cuenta</label><input id="rc-titular" name="titular"></div>
+        <div class="campo completo"><label for="rc-clabe">CLABE</label><input id="rc-clabe" name="clabe" inputmode="numeric" pattern="[0-9]{18}" maxlength="18" placeholder="18 dígitos" title="La CLABE tiene 18 dígitos"></div>
+
+        <h4 class="subtitulo">Cuenta</h4>
+        <div class="campo"><label for="rc-pass">Contraseña</label><input id="rc-pass" name="password" type="password" autocomplete="new-password" minlength="8" required></div>
+        <div class="campo"><label for="rc-pass2">Confirmar contraseña</label><input id="rc-pass2" type="password" autocomplete="new-password" required></div>
+
+        <label class="check completo"><input type="checkbox" required> Me comprometo a compartir fotos solo con autorización de las personas o de sus tutores.</label>
+        <label class="check completo"><input type="checkbox" required> Acepto el <a href="#">aviso de privacidad</a> y los <a href="#">términos y condiciones</a>.</label>
+        <button class="btn completo" type="submit">Enviar solicitud</button>
+      </form>
+
+      <div id="centro-ok" hidden>
+        <h3>¡Solicitud enviada!</h3>
+        <p class="relleno">Revisaremos tu comprobante y tu identificación. Te avisaremos por correo cuando tu cuenta esté activa.</p>
+        <button type="button" class="btn" data-cerrar-centro>Entendido</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="index.js"></script>
 </body>
 </html>

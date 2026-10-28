@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi panel de donante | [Nombre]</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&family=Actor&family=Belanosima:wght@400;600;700&family=Linden+Hill:ital@0;1&family=Roboto+Serif:opsz,wght@8..144,400;8..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="app">
+
+  <!-- ============ BARRA LATERAL IZQUIERDA ============ -->
+  <aside class="lateral">
+    <a href="donante.html" class="logo-lat">[Nombre]</a>
+    <div class="usuario">
+      <div class="avatar" id="u-ini">DN</div>
+      <div><h4 id="u-nombre">[Nombre del donante]</h4><small>Donante</small></div>
+    </div>
+    <nav aria-label="Cuenta">
+      <button data-dlg="d-perfil">Perfil</button>
+      <button data-dlg="d-reco">Enviar recomendación</button>
+      <button data-dlg="d-error">Reportar errores</button>
+      <a href="index.html">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <!-- ============ PÁGINA PRINCIPAL ============ -->
+  <main class="principal">
+    <h1>Hola, <span id="h-nombre">[Nombre]</span></h1>
+    <p class="relleno">[Mensaje de bienvenida o frase motivadora para el donante.]</p>
+
+    <!-- Resumen de impacto personal -->
+    <div class="resumen">
+      <div class="tarjeta stat"><strong id="s-don">0</strong>artículos donados este año</div>
+      <div class="tarjeta stat"><strong id="s-pen">0</strong>artículos por entregar</div>
+      <div class="tarjeta stat"><strong id="s-cita">—</strong>próxima entrega</div>
+    </div>
+    <p class="aviso" id="aviso" hidden></p>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" class="activo" data-tab="p-inv">Inventario</button>
+      <button role="tab" data-tab="p-don">Tus donaciones</button>
+      <button role="tab" data-tab="p-impacto" id="tab-impacto">Así se usó tu donación</button>
+      <button role="tab" data-tab="p-centro">Centros de acopio</button>
+      <button role="tab" data-tab="p-rach">Rachas y logros</button>
+      <button role="tab" data-tab="p-anual">Donaciones anuales</button>
+    </div>
+
+    <!-- Inventario -->
+    <div class="panel" id="p-inv">
+      <div class="panel-cab">
+        <h2>Inventario</h2>
+        <div class="botones">
+          <button class="btn" id="b-donar">Donar</button>
+          <button class="btn azul" data-dlg="d-art">Agregar artículo</button>
+        </div>
+      </div>
+      <input type="search" id="buscar" class="buscar" placeholder="Buscar en mi inventario…" aria-label="Buscar en mi inventario">
+      <p class="vacio" id="inv-vacio">Aún no tienes artículos. Usa “Agregar artículo” para empezar tu inventario.</p>
+      <div class="modulos" id="inv-lista"></div>
+    </div>
+
+    <!-- Tus donaciones -->
+    <div class="panel" id="p-don" hidden>
+      <h2>Tus donaciones</h2>
+      <p class="relleno">El centro de acopio es quien confirma cuándo recibe tus artículos o tu transferencia.</p>
+    
+      <h3>Artículos</h3>
+      <p class="vacio" id="don-vacio">Aún no tienes donaciones de artículos. Ve a Inventario y pulsa “Donar”.</p>
+      <div id="don-lista"></div>
+    
+      <div class="panel-cab"><h3>Dinero</h3><button class="btn azul" id="b-dinero">Donar dinero</button></div>
+      <p class="relleno">Total confirmado este año: <strong id="din-total">$0.00</strong></p>
+      <p class="vacio" id="din-vacio">Aún no has registrado donaciones en dinero.</p>
+      <div id="din-lista"></div>
+    </div>
+
+    <div class="panel" id="p-impacto" hidden>
+      <h2>Así se usó tu donación</h2>
+      <p class="relleno">Los centros de acopio comparten aquí cómo ayudó lo que donaste. Las fotos se publican con autorización de las personas o de sus tutores.</p>
+      <p class="vacio" id="imp-vacio">Cuando un centro comparta una foto o un mensaje sobre tu donación, aparecerá aquí.</p>
+      <div class="grid g2" id="imp-lista"></div>
+    </div>
+
+    <!-- Centro de acopio -->
+    <div class="panel" id="p-centro" hidden>
+      <h2>Centros de acopio</h2>
+      <div class="grid g2" id="centros-lista"></div>
+    </div>
+
+    <!-- Rachas y logros -->
+    <div class="panel" id="p-rach" hidden>
+      <h2>Rachas y logros</h2>
+      <div class="tarjeta racha">
+        <strong id="racha-n">0</strong><span>semanas seguidas donando</span>
+        <div class="dias" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <p class="relleno">[Explica cómo se gana y se mantiene una racha.]</p>
+      <h3>Logros</h3>
+      <div class="logros" id="logros"></div>
+    </div>
+
+    <!-- Tabla anual -->
+    <div class="panel" id="p-anual" hidden>
+      <h2>Tabla de donaciones anuales <span id="anio"></span></h2>
+      <div class="tabla-wrap">
+        <table><thead><tr><th>Mes</th><th>Artículos donados</th></tr></thead><tbody id="anual"></tbody></table>
+      </div>
+    </div>
+  </main>
+
+  <p class="gracias" id="gracias" role="status" hidden>¡Gracias por donar! 💙</p>
+
+  <!-- ============ VENTANAS ============ -->
+  <dialog id="d-art" class="ancho">
+    <div class="modal-cab"><h3 id="t-art">Agregar artículo</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
+    <form class="modal-cuerpo form-grid" id="f-art">
+      <div class="campo"><label for="a-cat">Módulo</label><select id="a-cat"></select></div>
+      <div class="campo"><label for="a-tipo">Tipo de artículo</label><select id="a-tipo"></select></div>
+      <div class="campo completo" id="w-otro" hidden><label for="a-otro">¿Cuál artículo?</label><input id="a-otro"></div>
+      <div class="campo"><label for="a-cant">Cantidad</label><input id="a-cant" type="number" min="1" value="1" required></div>
+      <div class="campo"><label for="a-cond">Condición</label><select id="a-cond"><option>Nuevo</option><option>Buen estado</option><option>Usado</option></select></div>
+      <div class="campo completo" id="w-cad" hidden><label for="a-cad">Fecha de caducidad</label><input id="a-cad" type="date"></div>
+      <div class="campo completo"><label for="a-nota">Notas (talla, marca, edad…)</label><textarea id="a-nota" style="min-height:80px"></textarea></div>
+      <button class="btn completo" type="submit">Guardar artículo</button>
+    </form>
+  </dialog>
+
+  <dialog id="d-ver">
+  <div class="modal-cab"><h3>Información del artículo</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
+  <div class="modal-cuerpo">
+    <div id="ver-cuerpo"></div>
+    <div class="botones"><button class="btn claro" id="ver-edit">Editar</button><button class="btn claro" id="ver-del">Eliminar</button></div>
+  </div>
+</dialog>
+
+<dialog id="d-donar" class="ancho">
+  <div class="modal-cab"><h3>Donar artículos</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
+  <form class="modal-cuerpo form-grid" id="f-donar">
+    <div class="campo completo">
+      <label for="d-centro">Centro de acopio</label>
+      <select id="d-centro" required></select>
+      <p class="relleno" id="d-info"></p>
+    </div>
+    <div class="completo">
+      <p class="lbl">Artículos a donar</p>
+      <p class="vacio" id="donar-vacio">No tienes artículos disponibles para donar. Agrega uno primero.</p>
+      <div id="donar-lista"></div>
+    </div>
+    <div class="campo"><label for="d-fecha">Fecha de entrega</label><input id="d-fecha" type="date" required></div>
+    <div class="campo"><label for="d-hora">Hora</label>
+      <select id="d-hora"><option>[09:00]</option><option>[10:00]</option><option>[11:00]</option><option>[12:00]</option><option>[16:00]</option></select></div>
+    <div class="campo completo"><label for="d-nota">Notas para el centro (opcional)</label><input id="d-nota"></div>
+    <button class="btn completo" id="donar-ok" type="submit">Confirmar donación</button>
+  </form>
+</dialog>
+  
+<dialog id="d-dinero" class="ancho">
+  <div class="modal-cab"><h3>Donar dinero por transferencia</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
+  <form class="modal-cuerpo form-grid" id="f-dinero">
+    <div class="campo completo"><label for="m-centro">Centro de acopio</label><select id="m-centro" required></select></div>
+    <div class="completo datos-banco" id="m-banco"></div>
+    <div class="campo"><label for="m-monto">Monto transferido (MXN)</label><input id="m-monto" type="number" min="1" step="0.01" required></div>
+    <div class="campo"><label for="m-fecha">Fecha de la transferencia</label><input id="m-fecha" type="date" required></div>
+    <div class="campo"><label for="m-rastreo">Clave de rastreo (opcional)</label><input id="m-rastreo"></div>
+    <div class="campo"><label for="m-comp">Comprobante (opcional)</label><input id="m-comp" type="file" accept="image/*,application/pdf"></div>
+    <p class="relleno completo">Haz la transferencia desde tu banco con los datos de arriba y escribe la referencia como concepto. Después registra aquí tu donación; el centro la confirmará cuando la reciba.</p>
+    <button class="btn completo" type="submit">Ya hice mi transferencia</button>
+  </form>
+</dialog>
+
+<dialog id="d-perfil" class="ancho" aria-labelledby="t-perfil">
+  <div class="modal-cab"><h3 id="t-perfil">Mi perfil</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
+  <div class="modal-cuerpo">
+
+    <!-- Foto -->
+    <div class="pf-cab">
+      <div class="pf-foto" id="pf-foto" role="img" aria-label="Foto de perfil">DN</div>
+      <div class="pf-acc">
+        <label class="btn claro" for="pf-archivo">Cambiar foto</label>
+        <input type="file" id="pf-archivo" accept="image/*" hidden>
+        <button type="button" class="btn claro" id="pf-quitar">Quitar foto</button>
+        <small>Formato JPG o PNG.</small>
+      </div>
+    </div>
+
+    <!-- Datos personales -->
+    <form id="f-perfil" class="form-grid">
+      <div class="campo"><label for="p-nombre">Nombre(s)</label><input id="p-nombre" required></div>
+      <div class="campo"><label for="p-ap">Apellido paterno</label><input id="p-ap" required></div>
+      <div class="campo"><label for="p-am">Apellido materno</label><input id="p-am" required></div>
+      <div class="campo"><label for="p-fecha">Fecha de nacimiento</label><input id="p-fecha" type="date" required></div>
+      <div class="campo completo">
+        <label for="p-correo">Correo electrónico</label>
+        <input id="p-correo" type="email" readonly>
+        <small class="pf-nota">El correo identifica tu cuenta. Si necesitas cambiarlo, contáctanos.</small>
+      </div>
+      <div class="campo"><label for="p-ubic">Ubicación</label><input id="p-ubic" required></div>
+      <div class="campo"><label for="p-tel">Teléfono (opcional)</label><input id="p-tel" type="tel"></div>
+      <div class="pf-botones">
+        <button class="btn" type="submit">Guardar cambios</button>
+        <button class="btn claro" type="button" id="pf-cancelar">Cancelar</button>
+      </div>
+    </form>
+
+    <!-- Cambiar contraseña -->
+    <details class="pf-sec">
+      <summary>Cambiar contraseña</summary>
+      <form id="f-pass" class="form-grid">
+        <div class="campo completo"><label for="pw-act">Contraseña actual</label><input id="pw-act" type="password" autocomplete="current-password" required></div>
+        <div class="campo"><label for="pw-new">Nueva contraseña</label><input id="pw-new" type="password" autocomplete="new-password" minlength="8" required></div>
+        <div class="campo"><label for="pw-new2">Confirmar nueva contraseña</label><input id="pw-new2" type="password" autocomplete="new-password" required></div>
+        <button class="btn completo" type="submit">Actualizar contraseña</button>
+      </form>
+    </details>
+
+    <!-- Eliminar cuenta -->
+    <div class="pf-peligro">
+      <h4>Eliminar cuenta</h4>
+      <p>Se borrarán tu perfil, tu inventario y tu historial de donaciones. Esta acción no se puede deshacer.</p>
+      <button type="button" class="btn claro" id="pf-eliminar">Eliminar mi cuenta</button>
+    </div>
+  </div>
+</dialog>
+
+  <dialog id="d-reco">
+    <div class="modal-cab"><h3>Enviar recomendación</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
+    <form class="modal-cuerpo" action="#"><div class="campo"><label for="r-t">Tu recomendación</label><textarea id="r-t" required></textarea></div><button class="btn" type="submit" style="width:100%">Enviar</button></form>
+  </dialog>
+
+  <dialog id="d-error">
+    <div class="modal-cab"><h3>Reportar errores</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
+    <form class="modal-cuerpo" action="#"><div class="campo"><label for="e-t">¿Qué falló?</label><textarea id="e-t" required></textarea></div><button class="btn" type="submit" style="width:100%">Enviar reporte</button></form>
+  </dialog>
+  <script src="donante.js"></script>
+</body>
+</html>
