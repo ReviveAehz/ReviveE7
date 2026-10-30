@@ -379,3 +379,15 @@ window.centroEnviaReporte = d => {
   pintarImpacto();
 };
 pintarImpacto();
+
+// ===== Sesión real (Supabase) =====
+iniciarPagina('donante', async user => {
+  const { data: d, error } = await sb.from('donantes').select('*').eq('usuario_id', user.id).single();
+  if (error || !d) { console.error(error); return; }
+  Object.assign(perfil, {
+    nombre: d.nombre, ap: d.apellido_paterno, am: d.apellido_materno, fecha: d.fecha_nacimiento,
+    correo: user.email, ubic: d.ubicacion, tel: d.telefono || '',
+    foto: d.foto_ruta ? sb.storage.from('publico').getPublicUrl(d.foto_ruta).data.publicUrl : ''
+  });
+  cargarPerfil();
+});
