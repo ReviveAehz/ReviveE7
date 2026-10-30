@@ -443,7 +443,7 @@
       <h3 id="login-titulo">Iniciar sesión</h3>
       <button type="button" data-cerrar-login aria-label="Cerrar">&times;</button>
     </div>
-    <form class="modal-cuerpo" id="form-login" action="donante.html" method="get">
+    <form class="modal-cuerpo" id="form-login">
       <div class="roles" role="radiogroup" aria-label="Tipo de cuenta">
         <div><input type="radio" id="rol-donante" name="rol" value="donante" checked><label for="rol-donante">Donante</label></div>
         <div><input type="radio" id="rol-centro" name="rol" value="centro"><label for="rol-centro">Centro de acopio</label></div>
@@ -462,7 +462,7 @@
       <h3 id="reg-titulo">Crear cuenta de donante</h3>
       <button type="button" data-cerrar-registro aria-label="Cerrar">&times;</button>
     </div>
-    <form class="modal-cuerpo form-grid" action="donante.html" method="get">
+    <form class="modal-cuerpo form-grid" id="form-registro">
       <div class="campo"><label for="r-nombre">Nombre(s)</label><input id="r-nombre" name="nombre" autocomplete="given-name" required></div>
       <div class="campo"><label for="r-ap">Apellido paterno</label><input id="r-ap" name="apellido_paterno" autocomplete="family-name" required></div>
       <div class="campo"><label for="r-am">Apellido materno</label><input id="r-am" name="apellido_materno" required></div>
@@ -541,6 +541,9 @@
     </div>
   </dialog>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
   <script src="index.js"></script>
+
 </body>
 </html>
