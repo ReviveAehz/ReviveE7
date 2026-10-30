@@ -211,3 +211,12 @@ function render() {
 }
 
 cargarForm(); refFotosMo(); render();
+
+// ===== Sesión real (Supabase) =====
+iniciarPagina('centro', async user => {
+  const { data: c, error } = await sb.from('centros').select('nombre, verificacion').eq('usuario_id', user.id).single();
+  if (error || !c) { console.error(error); return; }
+  centro.nombre = c.nombre;
+  centro.verificado = c.verificacion === 'aprobado';
+  render();
+});
