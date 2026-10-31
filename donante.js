@@ -365,10 +365,7 @@ cargarPerfil();
 
 // ===== Así se usó tu donación =====
 // EJEMPLOS: los centros enviarán estos reportes desde su panel. Borra los de ejemplo al conectar la base de datos.
-const reportes = [
-  { id: 1, centro: centros[0].nombre, fecha: '2026-10-10', donacion: 'Ropa × 3', foto: '', alt: 'Foto de ejemplo', texto: '[Ejemplo] Gracias a tu donación, vestimos a tres niños para la temporada de frío.', gracias: false, nuevo: true },
-  { id: 2, centro: centros[1].nombre, fecha: '2026-10-12', donacion: 'Alimentos × 5', foto: '', alt: 'Foto de ejemplo', texto: '[Ejemplo] Tus alimentos llegaron a una cena comunitaria con 40 familias.', gracias: false, nuevo: true }
-];
+const reportes = [];
 
 function pintarImpacto() {
   const visibles = reportes.filter(r => !r.oculto), l = $('imp-lista');
