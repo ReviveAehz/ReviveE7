@@ -9,7 +9,7 @@ const catalogo = {
   'Útiles escolares': 'Cuadernos / Libretas|Lápices / Portaminas|Bolígrafos / Plumas|Colores / Rotuladores|Marcadores|Reglas / Escuadras / Transportador|Estuches / Cartucheras|Mochilas / Correajes|Tijeras|Pegamento|Sacapuntas|Gomas de borrar|Calculadoras',
   'Artículos para bebé': 'Pañales|Toallitas húmedas|Biberones|Chupetes|Baberos|Cunas / Cunas de viaje|Cochecitos / Sillas de paseo|Porteadores / Mochilas portabebés|Bañeras / Artículos de baño infantil|Mantas / Sacos de dormir|Mordedores / Sonajeros',
   'Productos de higiene personal': 'Jabón de cuerpo / Gel de ducha|Champú / Acondicionador|Pasta de dientes / Cepillo dental|Desodorante|Crema hidratante / Corporal|Cuidado facial|Productos de afeitado / Depilación|Higiene femenina|Cortaúñas / Limas|Peines / Cepillos para cabello',
-  'Productos de limpieza': 'Detergente para ropa|Suavizante|Lavavajillas / Detergente para platos|Limpiahogares / Multiusos|Desinfectante / Lejía / Cloro|Limpiacristales|Estropajos / Esponjas / Bayetas|Escobas / Fregonas / Mopas|Bolsas de basura|Quitaagrasas / Desengrasante',
+  'Productos de limpieza': 'Detergente para ropa|Suavizante|Lavavajillas / Detergente para platos|Limpiahogares / Multiusos|Desinfectante / Lejía / Cloro|Limpiacristales|Estropajos / Esponjas / Bayetas|Escobas / Fregonas / Mopas|Bolsas de basura|Quitagrasas / Desengrasante',
   'Alimentos': 'Arroz / Legumbres|Pasta|Aceite / Vinagre / Condimentos|Enlatados / Conservas|Harinas / Cereales|Leche / Lácteos|Galletas / Snacks|Azúcar / Sal / Café|Bebidas / Zumos|Comida no perecedera',
   'Juguetes': 'Muñecos / Figuras de acción|Juegos de mesa / Puzles / Rompecabezas|Peluches|Bloques de construcción|Vehículos / Coches / Trenes|Juguetes educativos / Didácticos|Manualidades / Plastilina|Pelotas / Artículos deportivos infantiles|Disfraces|Instrumentos musicales de juguete',
   'Otros': 'Cobijas / Cobertores|Libros|Utensilios de cocina'
@@ -61,16 +61,32 @@ $('d-art').addEventListener('close', () => {
   editando = null; $('f-art').reset(); $('t-art').textContent = 'Agregar artículo';
   llenarTipos($('a-cat').value); ajustar();
 });
-$('f-art').onsubmit = e => {
+
+$('f-art').onsubmit = async e => {
   e.preventDefault();
-  const tipo = $('a-tipo').value;
-  const d = {
-    cat: $('a-cat').value, tipo, nom: tipo === OTRO ? $('a-otro').value.trim() : tipo,
-    cant: $('a-cant').value, cond: $('a-cond').value,
-    cad: $('w-cad').hidden ? '' : $('a-cad').value, nota: $('a-nota').value.trim()
-  };
-  if (editando) Object.assign(editando, d); else items.push({ ...d, estado: 'Pendiente', alta: Date.now(), ent: null });
-  $('d-art').close(); render();
+  const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true;
+  try {
+    const cat = $('a-cat').value, tipo = $('a-tipo').value, tid = tipoIds[cat + '|' + tipo];
+    if (!tid) throw new Error('Ese tipo de artículo no está en el catálogo de la base.');
+    const fila = {
+      tipo_articulo_id: tid,
+      detalle: tipo === OTRO ? $('a-otro').value.trim() : null,
+      cantidad: Number($('a-cant').value),
+      condicion: CONDICION[$('a-cond').value],
+      caducidad: $('w-cad').hidden ? null : ($('a-cad').value || null),
+      notas: $('a-nota').value.trim() || null
+    };
+    const r = editando
+      ? await sb.from('articulos').update(fila).eq('id', editando.id).select(SEL).single()
+      : await sb.from('articulos').insert({ ...fila, donante_id: usuarioId }).select(SEL).single();
+    if (r.error) throw r.error;
+    if (editando) Object.assign(editando, aItem(r.data));
+    else items.push({ ...aItem(r.data), estado: 'Pendiente', ent: null });
+    $('d-art').close(); render();
+  } catch (x) {
+    console.error(x);
+    alert('No se pudo guardar el artículo. ' + (x.message || ''));
+  } finally { btn.disabled = false; }
 };
 
 // ===== Ver información, editar, eliminar =====
@@ -92,9 +108,13 @@ function editar(i) {
   $('a-cant').value = i.cant; $('a-cond').value = i.cond; $('a-cad').value = i.cad; $('a-nota').value = i.nota;
   ajustar(); $('d-art').showModal();
 }
-function eliminar(i) {
+
+async function eliminar(i) {
   if (i.ent) { alert('Este artículo está en una donación. Cancela primero la entrega en "Tus donaciones".'); return; }
-  if (confirm('¿Eliminar "' + i.nom + '" de tu inventario?')) { items.splice(items.indexOf(i), 1); render(); }
+  if (!confirm('¿Eliminar "' + i.nom + '" de tu inventario?')) return;
+  const { error } = await sb.from('articulos').delete().eq('id', i.id);
+  if (error) { console.error(error); alert('No se pudo eliminar el artículo.'); return; }
+  items.splice(items.indexOf(i), 1); render();
 }
 
 // ===== Donar artículos: centro + artículos + fecha y hora =====
@@ -380,8 +400,38 @@ window.centroEnviaReporte = d => {
 };
 pintarImpacto();
 
+// ===== Inventario en Supabase =====
+let usuarioId = null;
+const tipoIds = {};                                  // 'Categoría|Tipo' → id en la base
+const CONDICION = { 'Nuevo': 'nuevo', 'Buen estado': 'buen_estado', 'Usado': 'usado' };
+const COND_TEXTO = { nuevo: 'Nuevo', buen_estado: 'Buen estado', usado: 'Usado' };
+const SEL = 'id, cantidad, condicion, caducidad, notas, detalle, creado_en, tipos_articulo(nombre, categorias(nombre))';
+
+function aItem(r) {                                  // fila de la base → objeto que usa la página
+  const tipo = r.tipos_articulo.nombre;
+  return { id: r.id, cat: r.tipos_articulo.categorias.nombre, tipo,
+           nom: tipo === OTRO ? (r.detalle || OTRO) : tipo,
+           cant: r.cantidad, cond: COND_TEXTO[r.condicion], cad: r.caducidad || '',
+           nota: r.notas || '', alta: new Date(r.creado_en).getTime() };
+}
+
+async function cargarInventario() {
+  const { data: tipos, error: e1 } = await sb.from('tipos_articulo').select('id, nombre, categorias(nombre)');
+  if (e1) throw e1;
+  tipos.forEach(t => { tipoIds[t.categorias.nombre + '|' + t.nombre] = t.id; });
+  Object.entries(catalogo).forEach(([c, lista]) => lista.split('|').concat(OTRO).forEach(t => {
+    if (!tipoIds[c + '|' + t]) console.warn('Falta en la base: ' + c + ' / ' + t);
+  }));
+  const { data, error } = await sb.from('articulos').select(SEL).eq('donante_id', usuarioId).order('creado_en');
+  if (error) throw error;
+  items.length = 0;
+  data.forEach(r => items.push({ ...aItem(r), estado: 'Pendiente', ent: null }));
+  render();
+}
+
 // ===== Sesión real (Supabase) =====
 iniciarPagina('donante', async user => {
+  usuarioId = user.id;
   const { data: d, error } = await sb.from('donantes').select('*').eq('usuario_id', user.id).single();
   if (error || !d) { console.error(error); return; }
   Object.assign(perfil, {
@@ -390,4 +440,6 @@ iniciarPagina('donante', async user => {
     foto: d.foto_ruta ? sb.storage.from('publico').getPublicUrl(d.foto_ruta).data.publicUrl : ''
   });
   cargarPerfil();
+  try { await cargarInventario(); }
+  catch (x) { console.error(x); alert('No pudimos cargar tu inventario. Recarga la página.'); }
 });

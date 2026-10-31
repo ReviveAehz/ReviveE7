@@ -31,7 +31,7 @@ async function iniciarPagina(rolEsperado, alListo) {
       return irA(perfil.rol === 'centro' ? 'centro.html' : perfil.rol === 'donante' ? 'donante.html' : 'index.html', 'rol distinto');
     }
     document.body.style.visibility = 'visible';
-    await alListo(user);
+    try { await alListo(user); } catch (e) { console.error(e); }
   } catch (e) {
     clearTimeout(espera);
     console.error(e);
