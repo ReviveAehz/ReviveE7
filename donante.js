@@ -19,11 +19,7 @@ const cats = Object.keys(catalogo);
 const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 // ===== Centros de acopio (cámbialos por los reales o tráelos de la base de datos) =====
-const centros = [
-  { id: 'c1', nombre: '[Centro de acopio 1]', dir: '[Dirección]', horario: '[Horario de recepción]', tel: '[Teléfono]', banco: '[Banco]', titular: '[Nombre del titular]', clabe: '[CLABE de 18 dígitos]', necesita: ['[Artículo urgente]', '[Artículo 2]'] },
-  { id: 'c2', nombre: '[Centro de acopio 2]', dir: '[Dirección]', horario: '[Horario de recepción]', tel: '[Teléfono]', banco: '[Banco]', titular: '[Nombre del titular]', clabe: '[CLABE de 18 dígitos]', necesita: ['[Artículo 1]', '[Artículo 2]'] },
-  { id: 'c3', nombre: '[Centro de acopio 3]', dir: '[Dirección]', horario: '[Horario de recepción]', tel: '[Teléfono]', banco: '[Banco]', titular: '[Nombre del titular]', clabe: '[CLABE de 18 dígitos]', necesita: ['[Artículo 1]', '[Artículo 2]'] }
-];
+const centros = [];
 
 // ===== Datos en memoria: aquí se conectará la base de datos =====
 const items = [], entregas = [], dineros = [];
@@ -139,14 +135,26 @@ function abrirDonar(cid) {
 }
 $('b-donar').onclick = () => abrirDonar();
 $('d-fecha').min = new Date().toISOString().slice(0, 10);
-$('f-donar').onsubmit = e => {
+$('f-donar').onsubmit = async e => {
   e.preventDefault();
   const sel = [...$('donar-lista').querySelectorAll('input:checked')].map(c => items[c.value]);
   if (!sel.length) { alert('Selecciona al menos un artículo.'); return; }
-  const en = { id: nid++, centro: centros.find(c => c.id === $('d-centro').value), fecha: $('d-fecha').value, hora: $('d-hora').value, nota: $('d-nota').value.trim(), items: sel };
-  sel.forEach(i => i.ent = en); entregas.push(en);
-  e.target.reset(); $('d-donar').close(); render();
-  document.querySelector('[data-tab="p-don"]').click();
+  const btn = $('donar-ok'); btn.disabled = true;
+  try {
+    const c = centros.find(x => x.id === $('d-centro').value);
+    const nota = $('d-nota').value.trim();
+    const { data: d, error } = await sb.from('donaciones').insert({
+      donante_id: usuarioId, centro_id: c.id, fecha_entrega: $('d-fecha').value, hora_entrega: $('d-hora').value, nota: nota || null
+    }).select('id').single();
+    if (error) throw error;
+    const { error: e2 } = await sb.from('donacion_articulos').insert(sel.map(i => ({ articulo_id: i.id, donacion_id: d.id })));
+    if (e2) { await sb.from('donaciones').delete().eq('id', d.id); throw e2; }   // sin artículos no queda donación a medias
+    const en = { id: d.id, centro: c, fecha: $('d-fecha').value, hora: $('d-hora').value, nota, items: sel };
+    sel.forEach(i => i.ent = en); entregas.push(en);
+    e.target.reset(); $('d-donar').close(); render();
+    document.querySelector('[data-tab="p-don"]').click();
+  } catch (x) { console.error(x); alert('No se pudo registrar la donación. ' + (x.message || '')); }
+  finally { btn.disabled = false; }
 };
 
 // ===== Donar dinero (transferencia) =====
@@ -164,8 +172,11 @@ function datosBanco() {
     b.append(r);
   });
 }
-function abrirDinero(cid) {
-  refDinero = 'DON-' + String(dineros.length + 1).padStart(4, '0');
+async function abrirDinero(cid) {
+  if (!$('m-centro').options.length) { alert('Aún no hay centros que reciban transferencias.'); return; }
+  const { data, error } = await sb.rpc('nueva_referencia');
+  if (error) { console.error(error); alert('No se pudo generar la referencia.'); return; }
+  refDinero = data;
   if (cid) $('m-centro').value = cid;
   datosBanco(); $('d-dinero').showModal();
 }
@@ -173,44 +184,28 @@ $('m-centro').onchange = datosBanco;
 $('m-fecha').max = new Date().toISOString().slice(0, 10);
 $('b-dinero').onclick = () => abrirDinero();
 $('d-dinero').addEventListener('close', () => $('f-dinero').reset());
-$('f-dinero').onsubmit = e => {
+$('f-dinero').onsubmit = async e => {
   e.preventDefault();
-  const f = $('m-comp').files[0];
-  dineros.push({
-    centro: centros.find(c => c.id === $('m-centro').value), monto: Number($('m-monto').value),
-    fecha: $('m-fecha').value, ref: refDinero, rastreo: $('m-rastreo').value.trim(),
-    comp: f ? f.name : '', estado: 'Por confirmar'
-  });
-  $('d-dinero').close(); render();
-  document.querySelector('[data-tab="p-don"]').click();
-  gracias('Registramos tu transferencia. El centro la confirmará 💙');
+  const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true;
+  try {
+    const c = centros.find(x => x.id === $('m-centro').value);
+    if (!c || !c.cuentaId) throw new Error('Ese centro no tiene cuenta registrada.');
+    const f = $('m-comp').files[0];
+    const ruta = await subirArchivo('privado', usuarioId, f, 'comprobante');
+    const { data, error } = await sb.from('transferencias').insert({
+      donante_id: usuarioId, cuenta_id: c.cuentaId, monto: Number($('m-monto').value),
+      fecha_transferencia: $('m-fecha').value, referencia: refDinero,
+      clave_rastreo: $('m-rastreo').value.trim() || null, comprobante_ruta: ruta
+    }).select('id, monto, fecha_transferencia, referencia, clave_rastreo').single();
+    if (error) throw error;
+    dineros.push({ id: data.id, centro: c, monto: Number(data.monto), fecha: data.fecha_transferencia, ref: data.referencia,
+                   rastreo: data.clave_rastreo || '', comp: f ? f.name : '', estado: 'Por confirmar' });
+    $('d-dinero').close(); render();
+    document.querySelector('[data-tab="p-don"]').click();
+    gracias('Registramos tu transferencia. El centro la confirmará 💙');
+  } catch (x) { console.error(x); alert('No se pudo registrar la transferencia. ' + (x.message || '')); }
+  finally { btn.disabled = false; }
 };
-
-// ===== SOLO PARA PRUEBAS: el centro de acopio actualizará esto desde su panel =====
-// Artículos, en la consola:  centroActualiza(0, 'Listo para entregar')  o  centroActualiza(0, 'Entregado')
-window.centroActualiza = (n, estado) => {
-  const i = items[n]; if (!i) return;
-  i.estado = estado;
-  if (estado === 'Entregado') { i.fecha = Date.now(); gracias(); }
-  render();
-};
-// Dinero, en la consola:  centroConfirmaDinero(0, 'Confirmada')  o  centroConfirmaDinero(0, 'No encontrada')
-window.centroConfirmaDinero = (n, estado) => { if (dineros[n]) { dineros[n].estado = estado; render(); } };
-
-// ===== Tarjetas de centros (se dibujan una vez) =====
-centros.forEach(c => {
-  const a = el('article', 'tarjeta'); a.append(el('h3', '', c.nombre));
-  a.append(el('p', '', 'Dirección: ' + c.dir), el('p', '', 'Horario: ' + c.horario), el('p', '', 'Teléfono: ' + c.tel));
-  a.append(el('h4', '', 'Lo que necesitamos ahora'));
-  const ul = el('ul', 'necesita');
-  c.necesita.forEach(n => { const li = el('li'); li.append(el('span', '', n), el('b', '', 'Se necesita')); ul.append(li); });
-  const bb = el('div', 'botones');
-  const b1 = el('button', 'btn', 'Donar artículos'); b1.onclick = () => abrirDonar(c.id);
-  const b2 = el('button', 'btn azul', 'Donar dinero'); b2.onclick = () => abrirDinero(c.id);
-  bb.append(b1, b2); a.append(ul, bb); $('centros-lista').append(a);
-});
-
-const badge = e => el('span', 'badge' + (e === 'Entregado' || e === 'Confirmada' ? ' ok' : e === 'Listo para entregar' ? ' listo' : ''), e);
 
 // ===== Dibujar todo =====
 function render() {
@@ -248,7 +243,12 @@ function render() {
     if (en.nota) t.append(el('p', 'meta', 'Nota: ' + en.nota));
     if (en.items.every(i => i.estado === 'Pendiente')) {
       const x = el('button', 'btn claro', 'Cancelar entrega');
-      x.onclick = () => { if (confirm('¿Cancelar esta entrega?')) { en.items.forEach(i => i.ent = null); entregas.splice(entregas.indexOf(en), 1); render(); } };
+      x.onclick = async () => {
+        if (!confirm('¿Cancelar esta entrega?')) return;
+        const { data, error } = await sb.from('donaciones').delete().eq('id', en.id).select('id');
+        if (error || !data || !data.length) { console.error(error); alert('No se pudo cancelar. Puede que el centro ya haya cambiado el estado de algún artículo.'); return; }
+        en.items.forEach(i => i.ent = null); entregas.splice(entregas.indexOf(en), 1); render();
+      };
       t.append(x);
     }
     dl.append(t);
@@ -400,6 +400,77 @@ window.centroEnviaReporte = d => {
 };
 pintarImpacto();
 
+// ===== Centros, donaciones y dinero en Supabase =====
+const ESTADO_ART = { pendiente: 'Pendiente', listo_para_entregar: 'Listo para entregar', entregado: 'Entregado' };
+const ESTADO_TRANSF = { por_confirmar: 'Por confirmar', confirmada: 'Confirmada', no_encontrada: 'No encontrada' };
+
+function pintarCentros() {
+  const lista = $('centros-lista'); lista.replaceChildren();
+  if (!centros.length) lista.append(el('p', 'vacio', 'Todavía no hay centros aprobados.'));
+  centros.forEach(c => {
+    const a = el('article', 'tarjeta'); a.append(el('h3', '', c.nombre));
+    a.append(el('p', '', 'Dirección: ' + c.dir), el('p', '', 'Horario: ' + c.horario));
+    if (c.tel) a.append(el('p', '', 'Teléfono: ' + c.tel));
+    if (c.necesita.length) {
+      a.append(el('h4', '', 'Lo que necesitamos ahora'));
+      const ul = el('ul', 'necesita');
+      c.necesita.forEach(n => { const li = el('li'); li.append(el('span', '', n), el('b', '', 'Se necesita')); ul.append(li); });
+      a.append(ul);
+    }
+    const bb = el('div', 'botones');
+    const b1 = el('button', 'btn', 'Donar artículos'); b1.onclick = () => abrirDonar(c.id); bb.append(b1);
+    if (c.cuentaId) { const b2 = el('button', 'btn azul', 'Donar dinero'); b2.onclick = () => abrirDinero(c.id); bb.append(b2); }
+    else bb.append(el('small', '', 'Este centro aún no recibe donaciones en dinero.'));
+    a.append(bb); lista.append(a);
+  });
+}
+
+async function cargarCentros() {
+  const { data, error } = await sb.from('centros')
+    .select('usuario_id, nombre, ubicacion, horario, centro_contactos(tipo, valor), insumos_urgentes(nombre), cuentas_bancarias(id, banco, titular, clabe)')
+    .eq('verificacion', 'aprobado').order('nombre');
+  if (error) throw error;
+  centros.length = 0;
+  data.forEach(c => {
+    const ct = Object.fromEntries(c.centro_contactos.map(x => [x.tipo, x.valor])), cb = c.cuentas_bancarias[0];
+    centros.push({ id: c.usuario_id, nombre: c.nombre, dir: c.ubicacion, horario: c.horario, tel: ct.telefono || '',
+      banco: cb ? cb.banco : '', titular: cb ? cb.titular : '', clabe: cb ? cb.clabe : '', cuentaId: cb ? cb.id : null,
+      necesita: c.insumos_urgentes.map(x => x.nombre) });
+  });
+  $('d-centro').replaceChildren(); centros.forEach(c => $('d-centro').append(new Option(c.nombre, c.id)));
+  $('m-centro').replaceChildren(); centros.filter(c => c.cuentaId).forEach(c => $('m-centro').append(new Option(c.nombre, c.id)));
+  pintarCentros();
+}
+
+async function cargarDonaciones() {
+  const { data, error } = await sb.from('donaciones')
+    .select('id, fecha_entrega, hora_entrega, nota, centro_id, centros(nombre, ubicacion), donacion_articulos(articulo_id, estado, entregado_en)')
+    .eq('donante_id', usuarioId).order('fecha_entrega');
+  if (error) throw error;
+  entregas.length = 0;
+  data.forEach(d => {
+    const en = { id: d.id, centro: { id: d.centro_id, nombre: d.centros?.nombre || 'Centro', dir: d.centros?.ubicacion || '' },
+      fecha: d.fecha_entrega, hora: d.hora_entrega.slice(0, 5), nota: d.nota || '', items: [] };
+    d.donacion_articulos.forEach(da => {
+      const it = items.find(i => i.id === da.articulo_id); if (!it) return;
+      it.estado = ESTADO_ART[da.estado]; it.fecha = da.entregado_en ? Date.parse(da.entregado_en) : undefined;
+      it.ent = en; en.items.push(it);
+    });
+    entregas.push(en);
+  });
+}
+
+async function cargarDinero() {
+  const { data, error } = await sb.from('transferencias')
+    .select('id, monto, fecha_transferencia, referencia, clave_rastreo, comprobante_ruta, estado, cuentas_bancarias(centros(nombre))')
+    .order('creado_en');
+  if (error) throw error;
+  dineros.length = 0;
+  data.forEach(t => dineros.push({ id: t.id, centro: { nombre: t.cuentas_bancarias?.centros?.nombre || 'Centro' },
+    monto: Number(t.monto), fecha: t.fecha_transferencia, ref: t.referencia, rastreo: t.clave_rastreo || '',
+    comp: t.comprobante_ruta ? t.comprobante_ruta.split('/').pop() : '', estado: ESTADO_TRANSF[t.estado] }));
+}
+
 // ===== Inventario en Supabase =====
 let usuarioId = null;
 const tipoIds = {};                                  // 'Categoría|Tipo' → id en la base
@@ -440,6 +511,11 @@ iniciarPagina('donante', async user => {
     foto: d.foto_ruta ? sb.storage.from('publico').getPublicUrl(d.foto_ruta).data.publicUrl : ''
   });
   cargarPerfil();
-  try { await cargarInventario(); }
-  catch (x) { console.error(x); alert('No pudimos cargar tu inventario. Recarga la página.'); }
+  try {
+    await cargarInventario();
+    await cargarCentros();
+    await cargarDonaciones();
+    await cargarDinero();
+    render();
+  } catch (x) { console.error(x); alert('No pudimos cargar tus datos. Recarga la página.'); }
 });

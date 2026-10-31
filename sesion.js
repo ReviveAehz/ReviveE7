@@ -39,3 +39,13 @@ async function iniciarPagina(rolEsperado, alListo) {
     document.body.innerHTML = '<p style="padding:2rem;font:16px sans-serif">No pudimos conectar con el servidor. Revisa tu conexión y <a href="index.html">vuelve al inicio</a>.</p>';
   }
 }
+
+async function subirArchivo(bucket, uid, archivo, nombre) {
+  if (!archivo || !archivo.size) return null;
+  if (archivo.size > 5 * 1024 * 1024) throw new Error('Cada archivo debe pesar máximo 5 MB.');
+  const ext = (archivo.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const ruta = `${uid}/${nombre}-${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from(bucket).upload(ruta, archivo, { contentType: archivo.type });
+  if (error) throw error;
+  return ruta;
+}
