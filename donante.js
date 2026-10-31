@@ -208,6 +208,7 @@ $('f-dinero').onsubmit = async e => {
 };
 
 // ===== Dibujar todo =====
+const badge = e => el('span', 'badge' + (e === 'Entregado' || e === 'Confirmada' ? ' ok' : e === 'Listo para entregar' ? ' listo' : ''), e);
 function render() {
   const anio = new Date().getFullYear();
   const entregados = items.filter(i => i.estado === 'Entregado');
