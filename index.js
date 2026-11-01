@@ -124,16 +124,8 @@ const textoError = e => {
   if (/5 MB|Máximo/i.test(m)) return m;
   return 'No pudimos completar la operación. Revisa los datos e intenta de nuevo.';
 };
-// Sube un archivo a la carpeta del usuario: <id>/<nombre>-<fecha>.<ext>
-async function subir(bucket, uid, archivo, nombre) {
-  if (!archivo || !archivo.size) return null;
-  if (archivo.size > 5 * 1024 * 1024) throw new Error('Cada archivo debe pesar máximo 5 MB.');
-  const ext = (archivo.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const ruta = `${uid}/${nombre}-${Date.now()}.${ext}`;
-  const { error } = await sb.storage.from(bucket).upload(ruta, archivo, { contentType: archivo.type });
-  if (error) throw error;
-  return ruta;
-}
+
+const subir = subirArchivo;
 
 // ----- Iniciar sesión -----
 document.getElementById('form-login').addEventListener('submit', async e => {
