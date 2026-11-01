@@ -207,3 +207,19 @@ formCentro.addEventListener('submit', async e => {
     formCentro.hidden = true; centroOk.hidden = false;
   } catch (x) { aviso(formCentro, textoError(x)); btn.disabled = false; }
 });
+
+// ----- Formulario de contacto -----
+document.getElementById('form-contacto').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector('button[type=submit]');
+  aviso(f, ''); btn.disabled = true;
+  const { error } = await sb.from('mensajes_contacto').insert({
+    nombre: document.getElementById('c-nombre').value.trim().slice(0, 100),
+    correo: document.getElementById('c-correo').value.trim().slice(0, 150),
+    asunto: document.getElementById('c-asunto').value.slice(0, 80),
+    mensaje: document.getElementById('c-mensaje').value.trim().slice(0, 2000)
+  });
+  btn.disabled = false;
+  if (error) { console.error(error); return aviso(f, 'No pudimos enviar tu mensaje. Intenta de nuevo.'); }
+  f.reset(); aviso(f, '¡Mensaje enviado! Gracias por escribirnos.');
+});
