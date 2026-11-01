@@ -117,13 +117,8 @@ function aviso(form, texto) {            // caja de error dentro del formulario
   }
   p.textContent = texto || ''; p.hidden = !texto;
 }
-const textoError = e => {
-  const m = (e && e.message) || '';
-  if (/already|registered/i.test(m)) return 'Ese correo ya está registrado.';
-  if (/password/i.test(m)) return 'La contraseña debe tener al menos 8 caracteres.';
-  if (/5 MB|Máximo/i.test(m)) return m;
-  return 'No pudimos completar la operación. Revisa los datos e intenta de nuevo.';
-};
+
+const textoError = e => V.error(e) || 'No pudimos completar la operación. Revisa los datos e intenta de nuevo.';
 
 const subir = subirArchivo;
 
@@ -223,3 +218,18 @@ document.getElementById('form-contacto').addEventListener('submit', async e => {
   if (error) { console.error(error); return aviso(f, 'No pudimos enviar tu mensaje. Intenta de nuevo.'); }
   f.reset(); aviso(f, '¡Mensaje enviado! Gracias por escribirnos.');
 });
+
+// ===== Validaciones de los campos =====
+V.aplicar({
+  '#form-login [name=correo]': V.correo(), '#form-login [name=password]': V.passLogin(),
+  '#form-registro [name=nombre]': V.persona(80), '#form-registro [name=apellido_paterno]': V.persona(80),
+  '#form-registro [name=apellido_materno]': V.persona(80),
+  '#form-registro [name=fecha_nacimiento]': V.fecha('1900-01-01', () => V.hace(13)),
+  '#form-registro [name=ubicacion]': V.lugar(150), '#form-registro [name=telefono]': V.telefono(false),
+  '#form-registro [name=correo]': V.correo(), '#form-registro [name=password]': V.password(),
+  'rc-nombre': V.lugar(120), 'rc-tipo': V.selector(), 'rc-horario': V.lugar(150), 'rc-ubic': V.lugar(255),
+  'rc-desc': V.palabrasMax(500, false), 'rc-resp': V.persona(120), 'rc-tel': V.telefono(true), 'rc-correo': V.correo(),
+  'rc-banco': V.lugar(60, false), 'rc-titular': V.lugar(120, false), 'rc-clabe': V.clabe(false), 'rc-pass': V.password(),
+  'c-nombre': V.persona(100), 'c-correo': V.correo(), 'c-mensaje': V.libre(2000)
+});
+V.archivos({ '#form-registro [name=foto]': { tipos: V.IMG }, 'rc-domicilio': { tipos: V.DOC }, 'rc-ine': { tipos: V.DOC }, 'rc-logo': { tipos: V.IMG } });

@@ -80,7 +80,7 @@ $('f-art').onsubmit = async e => {
     $('d-art').close(); render();
   } catch (x) {
     console.error(x);
-    alert('No se pudo guardar el artículo. ' + (x.message || ''));
+    alert('No se pudo guardar el artículo. ' + V.error(x));
   } finally { btn.disabled = false; }
 };
 
@@ -152,7 +152,7 @@ $('f-donar').onsubmit = async e => {
     sel.forEach(i => i.ent = en); entregas.push(en);
     e.target.reset(); $('d-donar').close(); render();
     document.querySelector('[data-tab="p-don"]').click();
-  } catch (x) { console.error(x); alert('No se pudo registrar la donación. ' + (x.message || '')); }
+  } catch (x) { console.error(x); alert('No se pudo registrar la donación. ' + V.error(x)); }
   finally { btn.disabled = false; }
 };
 
@@ -202,7 +202,7 @@ $('f-dinero').onsubmit = async e => {
     $('d-dinero').close(); render();
     document.querySelector('[data-tab="p-don"]').click();
     gracias('Registramos tu transferencia. El centro la confirmará 💙');
-  } catch (x) { console.error(x); alert('No se pudo registrar la transferencia. ' + (x.message || '')); }
+  } catch (x) { console.error(x); alert('No se pudo registrar la transferencia. ' + V.error(x)); }
   finally { btn.disabled = false; }
 };
 
@@ -649,7 +649,7 @@ $('f-perfil').onsubmit = async e => {
       fecha: campos.fecha_nacimiento, ubic: campos.ubicacion, tel: campos.telefono || '' });
     if ('foto_ruta' in campos) perfil.foto = campos.foto_ruta ? sb.storage.from('publico').getPublicUrl(campos.foto_ruta).data.publicUrl : '';
     fotoArchivo = null; $('d-perfil').close(); gracias('Perfil actualizado ✓');
-  } catch (x) { console.error(x); alert('No se pudieron guardar los cambios. ' + (x.message || '')); }
+  } catch (x) { console.error(x); alert('No se pudieron guardar los cambios. ' + V.error(x)); }
   finally { btn.disabled = false; }
 };
 
@@ -663,7 +663,7 @@ $('f-pass').onsubmit = async e => {
     const { error } = await sb.auth.updateUser({ password: $('pw-new').value });
     if (error) throw error;
     e.target.reset(); igual(); gracias('Contraseña actualizada ✓');
-  } catch (x) { console.error(x); alert('No se pudo actualizar la contraseña. ' + (x.message || '')); }
+  } catch (x) { console.error(x); alert('No se pudo actualizar la contraseña. ' + V.error(x)); }
   finally { btn.disabled = false; }
 };
 
@@ -676,3 +676,18 @@ $('pf-eliminar').onclick = async () => {
   if (error) { console.error(error); return alert('No se pudo eliminar la cuenta. Intenta de nuevo.'); }
   await sb.auth.signOut(); location.replace('index.html');
 };
+
+// ===== Validaciones de los campos =====
+V.aplicar({
+  'a-otro': V.lugar(100, false), 'a-cant': V.entero(1, 9999), 'a-cad': V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 3650), false),
+  'a-nota': V.libre(255, false, false),
+  'd-fecha': V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 365)), 'd-nota': V.libre(255, false, false),
+  'm-monto': V.monto(), 'm-fecha': V.fecha(() => V.mas(V.hoy(), -365), () => V.hoy()), 'm-rastreo': V.rastreo(),
+  'p-nombre': V.persona(80), 'p-ap': V.persona(80), 'p-am': V.persona(80),
+  'p-fecha': V.fecha('1900-01-01', () => V.hace(13)), 'p-ubic': V.lugar(150), 'p-tel': V.telefono(false),
+  'pw-act': V.passLogin(), 'pw-new': V.password(), 'r-t': V.libre(2000), 'e-t': V.libre(2000)
+});
+V.archivos({ 'm-comp': { tipos: V.DOC }, 'pf-archivo': { tipos: V.IMG } });
+// si se cambia de categoría, se limpian los campos que quedaron ocultos para que no bloqueen el envío
+function limpiarOcultos() { setTimeout(() => { [['w-cad', 'a-cad'], ['w-otro', 'a-otro']].forEach(([w, c]) => { if ($(w) && $(w).hidden && $(c)) { $(c).value = ''; $(c).setCustomValidity(''); } }); }, 0); }
+['a-cat', 'a-tipo'].forEach(id => $(id).addEventListener('change', limpiarOcultos));

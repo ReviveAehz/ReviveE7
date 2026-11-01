@@ -13,7 +13,7 @@ const ETIQUETAS = { telefono: 'Teléfono', correo: 'Correo', facebook: 'Facebook
 const idsContacto = { telefono: 'e-tel', correo: 'e-correo', facebook: 'e-fb', instagram: 'e-ig', tiktok: 'e-tk', x: 'e-x', web: 'e-web' };
 function gracias(msg) { const g = $('gracias'); g.textContent = msg; g.hidden = false; setTimeout(() => g.hidden = true, 3000); }
 const badge = e => el('span', 'badge' + (e === 'Entregado' || e === 'Confirmada' ? ' ok' : e === 'Listo para entregar' ? ' listo' : ''), e);
-const fallo = (x, msg) => { console.error(x); alert(msg + (x && x.message ? ' (' + x.message + ')' : '')); };
+const fallo = (x, msg) => { console.error(x); alert(msg + (V.error(x) ? ' ' + V.error(x) : '')); };
 const nombreArt = a => !a ? 'Artículo' : (a.tipos_articulo && a.tipos_articulo.nombre === 'Otro (escribir)' ? (a.detalle || 'Otro') : (a.tipos_articulo ? a.tipos_articulo.nombre : 'Artículo'));
 const nombreDe = d => d ? (d.nombre + ' ' + (d.apellido_paterno || '')).trim() : 'Donante';
 
@@ -51,11 +51,15 @@ function pintarMinis(cont, arr, refrescar) {
     d.append(im, b); cont.append(d);
   });
 }
-function agregar(input, arr, max, refrescar) {
-  const libre = max - arr.length, files = [...input.files];
+async function agregar(input, arr, max, refrescar) {
+  const libre = max - arr.length, files = [...input.files]; input.value = '';
   if (files.length > libre) gracias('Máximo ' + max + ' imágenes. Se agregaron ' + libre + '.');
-  files.slice(0, libre).forEach(f => arr.push({ file: f, url: URL.createObjectURL(f) }));
-  input.value = ''; refrescar();
+  for (const f of files.slice(0, libre)) {
+    const m = await V.archivo(f, V.IMG, 15);
+    if (m) { alert(f.name + ': ' + m); continue; }
+    arr.push({ file: f, url: URL.createObjectURL(f) });
+  }
+  refrescar();
 }
 const refImgsEdit = () => { pintarMinis($('e-prev'), imgsEdit, refImgsEdit); $('e-icuenta').textContent = imgsEdit.length + ' de 10 imágenes'; };
 const refFotosMo = () => { pintarMinis($('mo-prev'), fotosMo, refFotosMo); $('mo-fcuenta').textContent = fotosMo.length + ' de 5 fotos'; };
@@ -212,7 +216,6 @@ $('f-motivar').onsubmit = async e => {
 function validarContactos() {
   const n = Object.values(idsContacto).filter(id => $(id).value.trim()).length;
   $('e-ccuenta').textContent = '(mínimo 2 · llevas ' + n + ')';
-  $('e-tel').setCustomValidity(n < 2 ? 'Agrega al menos 2 datos de contacto' : '');
 }
 Object.values(idsContacto).forEach(id => $(id).addEventListener('input', validarContactos));
 function cargarForm() {
@@ -227,6 +230,7 @@ $('d-editar').addEventListener('close', cargarForm);
 $('e-cancelar').onclick = () => $('d-editar').close();
 $('f-editar').onsubmit = async e => {
   e.preventDefault();
+  if (Object.values(idsContacto).filter(id => $(id).value.trim()).length < 2) { alert('Agrega al menos 2 datos de contacto.'); return; }
   const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true;
   const ok = r => { if (r.error) throw r.error; return r; };
   try {
@@ -325,4 +329,13 @@ iniciarPagina('centro', async user => {
   try { await Promise.all([cargarCentro(), cargarBandeja(), cargarDinero(), cargarImpacto()]); }
   catch (x) { fallo(x, 'No pudimos cargar tus datos. Recarga la página.'); }
   cargarForm(); refFotosMo(); render();
+});
+
+// ===== Validaciones de los campos =====
+V.aplicar({
+  'e-nombre': V.lugar(120), 'e-ubic': V.lugar(255), 'e-horario': V.lugar(150), 'e-tipo': V.selector(),
+  'e-tel': V.telefono(false), 'e-correo': V.correo(false), 'e-fb': V.red(), 'e-ig': V.red(), 'e-tk': V.red(), 'e-x': V.red(), 'e-web': V.web(),
+  'e-desc': V.palabrasMax(500, false), 'e-urg': V.lineas(20, 100),
+  'e-banco': V.lugar(60, false), 'e-titular': V.lugar(120, false), 'e-clabe': V.clabe(false),
+  'mo-desc': V.palabrasMax(150)
 });
