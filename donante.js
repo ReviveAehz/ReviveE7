@@ -31,7 +31,6 @@ const pesos = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency:
 // ===== Ventanas y pestañas =====
 document.querySelectorAll('[data-dlg]').forEach(b => b.onclick = () => $(b.dataset.dlg).showModal());
 document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d || e.target.hasAttribute('data-cerrar')) d.close(); }));
-document.querySelectorAll('#d-reco form, #d-error form').forEach(f => f.onsubmit = e => { e.preventDefault(); f.reset(); f.closest('dialog').close(); });
 const tabs = document.querySelectorAll('[data-tab]');
 tabs.forEach(t => t.onclick = () => {
   tabs.forEach(x => x.classList.toggle('activo', x === t));
@@ -199,7 +198,7 @@ $('f-dinero').onsubmit = async e => {
     }).select('id, monto, fecha_transferencia, referencia, clave_rastreo').single();
     if (error) throw error;
     dineros.push({ id: data.id, centro: c, monto: Number(data.monto), fecha: data.fecha_transferencia, ref: data.referencia,
-                   rastreo: data.clave_rastreo || '', comp: f ? f.name : '', estado: 'Por confirmar' });
+                   rastreo: data.clave_rastreo || '', comp: f ? f.name : '', ruta, estado: 'Por confirmar' });
     $('d-dinero').close(); render();
     document.querySelector('[data-tab="p-don"]').click();
     gracias('Registramos tu transferencia. El centro la confirmará 💙');
@@ -209,6 +208,18 @@ $('f-dinero').onsubmit = async e => {
 
 // ===== Dibujar todo =====
 const badge = e => el('span', 'badge' + (e === 'Entregado' || e === 'Confirmada' ? ' ok' : e === 'Listo para entregar' ? ' listo' : ''), e);
+async function cancelarTransferencia(d) {
+  if (!confirm('¿Cancelar el registro de la transferencia ' + d.ref + '?\n\nEsto solo elimina el registro en Revive. Si ya hiciste la transferencia en tu banco, el dinero no se devuelve: habla con el centro.')) return;
+  const { data, error } = await sb.from('transferencias').delete().eq('id', d.id).select('id');
+  if (error || !data || !data.length) {
+    console.error(error);
+    alert('No se pudo cancelar. Puede que el centro ya haya revisado la transferencia.');
+    return;
+  }
+  if (d.ruta) await sb.storage.from('privado').remove([d.ruta]);      // borra también el comprobante
+  dineros.splice(dineros.indexOf(d), 1); render();
+  gracias('Registro cancelado');
+}
 function render() {
   const anio = new Date().getFullYear();
   const entregados = items.filter(i => i.estado === 'Entregado');
@@ -263,6 +274,11 @@ function render() {
     t.append(el('h3', '', pesos(d.monto) + ' → ' + d.centro.nombre));
     const r = el('div', 'art'); r.append(el('span', '', fmt(d.fecha) + ' · ' + d.ref), badge(d.estado)); t.append(r);
     if (d.comp) t.append(el('p', 'meta', 'Comprobante: ' + d.comp));
+    if (d.estado === 'Por confirmar') {
+      const x = el('button', 'btn claro', 'Cancelar transferencia');
+      x.onclick = () => cancelarTransferencia(d);
+      t.append(x);
+    }
     ml.append(t);
   });
   $('din-vacio').hidden = dineros.length > 0;
@@ -430,7 +446,7 @@ async function cargarCentros() {
   if (error) throw error;
   centros.length = 0;
   data.forEach(c => {
-    const ct = Object.fromEntries(c.centro_contactos.map(x => [x.tipo, x.valor])), cb = c.cuentas_bancarias[0];
+    const ct = Object.fromEntries(c.centro_contactos.map(x => [x.tipo, x.valor])), cb = Array.isArray(c.cuentas_bancarias) ? c.cuentas_bancarias[0] : c.cuentas_bancarias;
     centros.push({ id: c.usuario_id, nombre: c.nombre, dir: c.ubicacion, horario: c.horario, tel: ct.telefono || '',
       banco: cb ? cb.banco : '', titular: cb ? cb.titular : '', clabe: cb ? cb.clabe : '', cuentaId: cb ? cb.id : null,
       necesita: c.insumos_urgentes.map(x => x.nombre) });
@@ -466,7 +482,7 @@ async function cargarDinero() {
   dineros.length = 0;
   data.forEach(t => dineros.push({ id: t.id, centro: { nombre: t.cuentas_bancarias?.centros?.nombre || 'Centro' },
     monto: Number(t.monto), fecha: t.fecha_transferencia, ref: t.referencia, rastreo: t.clave_rastreo || '',
-    comp: t.comprobante_ruta ? t.comprobante_ruta.split('/').pop() : '', estado: ESTADO_TRANSF[t.estado] }));
+    comp: t.comprobante_ruta ? t.comprobante_ruta.split('/').pop() : '', ruta: t.comprobante_ruta, estado: ESTADO_TRANSF[t.estado] }));
 }
 
 // ===== Inventario en Supabase =====
@@ -514,6 +530,149 @@ iniciarPagina('donante', async user => {
     await cargarCentros();
     await cargarDonaciones();
     await cargarDinero();
+    await cargarImpacto();
     render();
   } catch (x) { console.error(x); alert('No pudimos cargar tus datos. Recarga la página.'); }
 });
+
+// =====================================================================
+//  PASO F: impacto, perfil, soporte y cuenta (Supabase)
+// =====================================================================
+
+// ----- Recomendaciones y reportes de errores -----
+[['d-reco', 'r-t', 'recomendacion', 'Gracias por tu recomendación 💙'],
+ ['d-error', 'e-t', 'error', 'Recibimos tu reporte. Gracias por avisarnos 💙']].forEach(([dlg, campo, tipo, aviso]) => {
+  const f = $(dlg).querySelector('form');
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const texto = $(campo).value.trim(), btn = f.querySelector('button[type=submit]');
+    if (!texto) return;
+    if (texto.length > 2000) return alert('El mensaje es muy largo (máximo 2000 caracteres).');
+    btn.disabled = true;
+    const { error } = await sb.from('mensajes_soporte').insert({ usuario_id: usuarioId, tipo, mensaje: texto });
+    btn.disabled = false;
+    if (error) { console.error(error); return alert('No se pudo enviar. Intenta de nuevo.'); }
+    f.reset(); $(dlg).close(); gracias(aviso);
+  };
+});
+
+// ----- Así se usó tu donación -----
+async function cargarImpacto() {
+  const { data, error } = await sb.from('reportes_impacto')
+    .select('id, mensaje, creado_en, visto, gracias_enviado, reporte_fotos(ruta, orden), donaciones!inner(donante_id, centros(nombre), donacion_articulos(articulos(cantidad, detalle, tipos_articulo(nombre))))')
+    .eq('donaciones.donante_id', usuarioId).eq('oculto', false).order('creado_en', { ascending: false });
+  if (error) throw error;
+  const rutas = data.flatMap(r => r.reporte_fotos.map(f => f.ruta)), firmadas = {};
+  if (rutas.length) {
+    const { data: s } = await sb.storage.from('privado').createSignedUrls(rutas, 3600);
+    (s || []).forEach(x => { if (x.signedUrl) firmadas[x.path] = x.signedUrl; });
+  }
+  reportes.length = 0;
+  data.forEach(r => reportes.push({
+    id: r.id, centro: r.donaciones.centros ? r.donaciones.centros.nombre : 'Centro', fecha: r.creado_en.slice(0, 10),
+    donacion: r.donaciones.donacion_articulos.map(a => {
+      const t = a.articulos.tipos_articulo.nombre;
+      return (t === OTRO ? (a.articulos.detalle || t) : t) + ' × ' + a.articulos.cantidad;
+    }).join(', '),
+    texto: r.mensaje, gracias: r.gracias_enviado, visto: r.visto, nuevo: !r.visto,
+    fotos: r.reporte_fotos.sort((a, b) => a.orden - b.orden).map(f => firmadas[f.ruta]).filter(Boolean)
+  }));
+  pintarImpacto();
+}
+async function darGracias(r) {
+  const { error } = await sb.from('reportes_impacto').update({ gracias_enviado: true }).eq('id', r.id);
+  if (error) { console.error(error); return alert('No se pudo enviar el agradecimiento.'); }
+  r.gracias = true; pintarImpacto(); gracias('Le avisamos al centro 💙');
+}
+async function reportarFoto(r) {
+  if (!confirm('¿Reportar esta publicación como inapropiada? Dejará de mostrarse y la revisará el equipo de Revive.')) return;
+  const d = await sb.from('denuncias_foto').insert({ reporte_id: r.id, motivo: 'Reportada por el donante' });
+  if (d.error && d.error.code !== '23505') { console.error(d.error); return alert('No se pudo enviar el reporte.'); }   // 23505 = ya estaba reportada
+  const { error } = await sb.from('reportes_impacto').update({ oculto: true }).eq('id', r.id);
+  if (error) { console.error(error); return alert('No se pudo ocultar la publicación.'); }
+  reportes.splice(reportes.indexOf(r), 1); pintarImpacto(); gracias('Gracias por avisarnos');
+}
+function pintarImpacto() {
+  const l = $('imp-lista'); l.replaceChildren();
+  reportes.forEach(r => {
+    const a = el('article', 'tarjeta reporte');
+    if (r.fotos.length) {
+      const g = el('div', 'galeria');
+      r.fotos.forEach(u => { const im = document.createElement('img'); im.src = u; im.alt = 'Foto compartida por el centro'; im.loading = 'lazy'; g.append(im); });
+      a.append(g);
+    }
+    a.append(el('h3', '', r.centro), el('p', 'meta', fmt(r.fecha) + ' · Tu donación: ' + r.donacion), el('p', '', r.texto));
+    const b = el('div', 'botones');
+    const g = el('button', 'btn' + (r.gracias ? ' claro' : ' azul'), r.gracias ? 'Gracias enviado 💙' : 'Dar gracias 💙');
+    g.disabled = r.gracias; g.onclick = () => darGracias(r); b.append(g);
+    if (r.fotos.length) { const x = el('button', 'btn claro', 'Reportar foto'); x.onclick = () => reportarFoto(r); b.append(x); }
+    a.append(b); l.append(a);
+  });
+  $('imp-vacio').hidden = reportes.length > 0;
+  const n = reportes.filter(r => r.nuevo).length;
+  $('tab-impacto').textContent = 'Así se usó tu donación' + (n ? ' (' + n + ')' : '');
+}
+$('tab-impacto').addEventListener('click', async () => {      // al abrir la pestaña, los mensajes quedan como vistos
+  const ids = reportes.filter(r => !r.visto).map(r => r.id);
+  if (!ids.length) return;
+  reportes.forEach(r => { r.visto = true; });
+  const { error } = await sb.from('reportes_impacto').update({ visto: true }).in('id', ids);
+  if (error) console.error(error);
+});
+
+// ----- Perfil: datos y foto -----
+let fotoArchivo = null;
+$('pf-archivo').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  if (f.size > 5 * 1024 * 1024) { alert('La foto debe pesar máximo 5 MB.'); e.target.value = ''; return; }
+  fotoArchivo = f; fotoTmp = URL.createObjectURL(f); ponerFoto($('pf-foto'), fotoTmp, ''); e.target.value = '';
+};
+$('pf-quitar').onclick = () => { fotoArchivo = null; fotoTmp = ''; ponerFoto($('pf-foto'), '', iniciales()); };
+$('f-perfil').onsubmit = async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true;
+  try {
+    const campos = {
+      nombre: $('p-nombre').value.trim(), apellido_paterno: $('p-ap').value.trim(), apellido_materno: $('p-am').value.trim(),
+      fecha_nacimiento: $('p-fecha').value, ubicacion: $('p-ubic').value.trim(), telefono: $('p-tel').value.trim() || null
+    };
+    const { data: ant } = await sb.from('donantes').select('foto_ruta').eq('usuario_id', usuarioId).single();
+    if (fotoTmp && fotoArchivo) campos.foto_ruta = await subirArchivo('publico', usuarioId, fotoArchivo, 'perfil');
+    else if (fotoTmp === '') campos.foto_ruta = null;
+    const { error } = await sb.from('donantes').update(campos).eq('usuario_id', usuarioId);
+    if (error) throw error;
+    if ('foto_ruta' in campos && ant && ant.foto_ruta && ant.foto_ruta !== campos.foto_ruta) {
+      const r = await sb.storage.from('publico').remove([ant.foto_ruta]);       // borra la foto anterior
+      if (r.error) console.warn(r.error);
+    }
+    Object.assign(perfil, { nombre: campos.nombre, ap: campos.apellido_paterno, am: campos.apellido_materno,
+      fecha: campos.fecha_nacimiento, ubic: campos.ubicacion, tel: campos.telefono || '' });
+    if ('foto_ruta' in campos) perfil.foto = campos.foto_ruta ? sb.storage.from('publico').getPublicUrl(campos.foto_ruta).data.publicUrl : '';
+    fotoArchivo = null; $('d-perfil').close(); gracias('Perfil actualizado ✓');
+  } catch (x) { console.error(x); alert('No se pudieron guardar los cambios. ' + (x.message || '')); }
+  finally { btn.disabled = false; }
+};
+
+// ----- Perfil: contraseña -----
+$('f-pass').onsubmit = async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true;
+  try {
+    const re = await sb.auth.signInWithPassword({ email: perfil.correo, password: $('pw-act').value });
+    if (re.error) return alert('La contraseña actual no es correcta.');
+    const { error } = await sb.auth.updateUser({ password: $('pw-new').value });
+    if (error) throw error;
+    e.target.reset(); igual(); gracias('Contraseña actualizada ✓');
+  } catch (x) { console.error(x); alert('No se pudo actualizar la contraseña. ' + (x.message || '')); }
+  finally { btn.disabled = false; }
+};
+
+// ----- Eliminar mi cuenta -----
+$('pf-eliminar').onclick = async () => {
+  if (!confirm('¿Seguro que quieres eliminar tu cuenta? Se borrarán tu perfil, tu inventario y tus donaciones. No se puede deshacer.')) return;
+  const { data: archivos } = await sb.storage.from('publico').list(usuarioId);          // tu foto de perfil
+  if (archivos && archivos.length) await sb.storage.from('publico').remove(archivos.map(f => usuarioId + '/' + f.name));
+  const { error } = await sb.rpc('eliminar_mi_cuenta');
+  if (error) { console.error(error); return alert('No se pudo eliminar la cuenta. Intenta de nuevo.'); }
+  await sb.auth.signOut(); location.replace('index.html');
+};

@@ -256,10 +256,7 @@ $('f-editar').onsubmit = async e => {
     ok(await sb.from('insumos_urgentes').delete().eq('centro_id', uid));
     if (lineas.length) ok(await sb.from('insumos_urgentes').insert(lineas.map(nombre => ({ centro_id: uid, nombre }))));
     // 5. cuenta bancaria (no se borra: las transferencias dependen de ella)
-    if (banco) {
-      if (centro.cuenta) ok(await sb.from('cuentas_bancarias').update({ banco, titular, clabe }).eq('id', centro.cuenta.id));
-      else ok(await sb.from('cuentas_bancarias').insert({ centro_id: uid, banco, titular, clabe }));
-    }
+    if (banco) ok(await sb.from('cuentas_bancarias').upsert({ centro_id: uid, banco, titular, clabe }, { onConflict: 'centro_id' }));
     $('d-editar').close(); await cargarCentro(); cargarForm(); render(); gracias('Datos actualizados ✓');
   } catch (x) { fallo(x, 'No se pudieron guardar los cambios.'); await cargarCentro().catch(() => {}); render(); }
   finally { btn.disabled = false; }
