@@ -221,7 +221,7 @@ document.getElementById('form-contacto').addEventListener('submit', async e => {
 
 // ===== Validaciones de los campos =====
 V.aplicar({
-  '#form-login [name=correo]': V.correo(), '#form-login [name=password]': V.passLogin(),
+  '#form-login [name=correo]': V.correo(true, false), '#form-login [name=password]': V.passLogin(),
   '#form-registro [name=nombre]': V.persona(80), '#form-registro [name=apellido_paterno]': V.persona(80),
   '#form-registro [name=apellido_materno]': V.persona(80),
   '#form-registro [name=fecha_nacimiento]': V.fecha('1900-01-01', () => V.hace(13)),
