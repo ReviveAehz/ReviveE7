@@ -17,7 +17,7 @@
     <a href="donante.html" class="logo-lat">Revive</a>
     <div class="usuario">
       <div class="avatar" id="u-ini">DN</div>
-      <div><h4 id="u-nombre">[Nombre del donante]</h4><small>Donante</small></div>
+      <div><h4 id="u-nombre">Donante</h4><small>Donante</small></div>
     </div>
     <nav aria-label="Cuenta">
       <button data-dlg="d-perfil">Perfil</button>
@@ -29,8 +29,8 @@
 
   <!-- ============ PÁGINA PRINCIPAL ============ -->
   <main class="principal">
-    <h1>Hola, <span id="h-nombre">[Nombre]</span></h1>
-    <p class="relleno">[Mensaje de bienvenida o frase motivadora para el donante.]</p>
+    <h1>Hola, <span id="h-nombre">Donante</span></h1>
+    <p class="relleno">Gracias por ser parte de Revive. Cada artículo que donas puede tener una segunda vida y llegar a quien más lo necesita.</p>
 
     <!-- Resumen de impacto personal -->
     <div class="resumen">
@@ -98,7 +98,7 @@
         <strong id="racha-n">0</strong><span>semanas seguidas donando</span>
         <div class="dias" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </div>
-      <p class="relleno">[Explica cómo se gana y se mantiene una racha.]</p>
+      <p class="relleno">Una racha cuenta las semanas seguidas en las que el centro confirmó que recibió al menos uno de tus artículos. Cada cuadro azul es una semana de tu racha (se muestran hasta 7). Si pasa una semana completa sin ninguna entrega confirmada, la racha vuelve a cero; la semana en curso no la rompe, así que aún tienes tiempo de donar.</p>
       <h3>Logros</h3>
       <div class="logros" id="logros"></div>
     </div>
@@ -228,12 +228,12 @@
 
   <dialog id="d-reco">
     <div class="modal-cab"><h3>Enviar recomendación</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
-    <form class="modal-cuerpo" action="#"><div class="campo"><label for="r-t">Tu recomendación</label><textarea id="r-t" required></textarea></div><button class="btn" type="submit" style="width:100%">Enviar</button></form>
+    <form class="modal-cuerpo"><div class="campo"><label for="r-t">Tu recomendación</label><textarea id="r-t" required></textarea></div><button class="btn" type="submit" style="width:100%">Enviar</button></form>
   </dialog>
 
   <dialog id="d-error">
     <div class="modal-cab"><h3>Reportar errores</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
-    <form class="modal-cuerpo" action="#"><div class="campo"><label for="e-t">¿Qué falló?</label><textarea id="e-t" required></textarea></div><button class="btn" type="submit" style="width:100%">Enviar reporte</button></form>
+    <form class="modal-cuerpo"><div class="campo"><label for="e-t">¿Qué falló?</label><textarea id="e-t" required></textarea></div><button class="btn" type="submit" style="width:100%">Enviar reporte</button></form>
   </dialog>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
