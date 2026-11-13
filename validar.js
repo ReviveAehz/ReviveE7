@@ -1,11 +1,11 @@
 const V = (() => {
-  // ---------- fechas ----------
+  //fechas
   const local = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   const hoy = () => local(new Date());
   const mas = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n); return local(d); };
   const hace = anios => { const d = new Date(); d.setFullYear(d.getFullYear() - anios); return local(d); };
 
-  // ---------- limpieza ----------
+  //limpieza
   const lin = v => String(v == null ? '' : v).normalize('NFC').replace(/\s+/g, ' ').trim();                 // una línea
   const multi = v => String(v == null ? '' : v).normalize('NFC').replace(/\r/g, '').replace(/[ \t]+/g, ' ')
     .replace(/ ?\n ?/g, '\n').replace(/\n{3,}/g, '\n\n').trim();                                            // varias líneas
@@ -22,8 +22,7 @@ const V = (() => {
     return (10 - (s % 10)) % 10 === Number(c[17]);
   };
 
-  // ---------- fábrica de reglas ----------
-  // cada regla: { f(valor) -> mensaje o '', norm(valor), max, ml (maxlength del campo), ... }
+  //fábrica de regla
   const campo = (o, check) => ({
     max: o.max, ml: o.ml || o.max, norm: o.norm || (o.multi ? multi : lin),
     f(v) {
@@ -88,7 +87,7 @@ const V = (() => {
   }, { fecha: true, min, max });
   const selector = () => num(v => v === '' ? 'Elige una opción.' : '');
 
-  // ---------- conexión con los campos ----------
+  //conexión con los campos
   const aplicar = mapa => {
     const formas = new Set();
     Object.entries(mapa).forEach(([id, r]) => {
@@ -115,14 +114,14 @@ const V = (() => {
     });
     formas.forEach(f => {
       if (f._vlisto) return; f._vlisto = true;
-      f.addEventListener('submit', e => {                         // antes que los demás: limpia y vuelve a validar
+      f.addEventListener('submit', e => {                    
         f._v.forEach(fn => fn(true));
         if (!f.checkValidity()) { e.preventDefault(); e.stopImmediatePropagation(); f.reportValidity(); }
       }, true);
     });
   };
 
-  // ---------- archivos: se revisa el contenido real, no solo la extensión ----------
+  //archivos
   const IMG = ['image/jpeg', 'image/png', 'image/webp'], DOC = IMG.concat('application/pdf');
   const firma = async f => {
     const b = new Uint8Array(await f.slice(0, 12).arrayBuffer());
@@ -150,11 +149,11 @@ const V = (() => {
     });
   });
 
-  // ---------- errores en lenguaje claro (nunca se muestran textos técnicos) ----------
+  //errores en lenguaje claro
   const fallo = t => Object.assign(new Error(t), { code: 'USR' });
   const error = x => {
     const m = (x && x.message) || '';
-    if (x && (x.code === 'USR' || x.code === 'P0001' || x.name === 'Error')) return m;       // mensajes escritos por nosotros
+    if (x && (x.code === 'USR' || x.code === 'P0001' || x.name === 'Error')) return m;    
     if (x && x.code === '23514') return 'Alguno de los datos tiene un formato no permitido. Revísalos.';
     if (x && x.code === '23505') return 'Ese dato ya existe.';
     if (x && x.code === '23503') return 'No se puede completar porque depende de otro dato.';
