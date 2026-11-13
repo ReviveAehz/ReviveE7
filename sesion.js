@@ -1,4 +1,4 @@
-// Utilidades de sesión para las páginas privadas (donante.html y centro.html)
+// Utilidades de sesión para las páginas privadas
 function irA(pagina, motivo) {
   console.warn('Redirigiendo a ' + pagina + (motivo ? ' (' + motivo + ')' : ''));
   location.replace(pagina);
@@ -17,9 +17,9 @@ async function cerrarSesion() {
 async function iniciarPagina(rolEsperado, alListo) {
   document.querySelectorAll('.lateral nav a[href="index.html"]').forEach(a =>
     a.addEventListener('click', e => { e.preventDefault(); cerrarSesion(); }));
-  window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });   // botón «atrás» tras cerrar sesión
+  window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });   
 
-  const espera = setTimeout(() => irA('index.html', 'tiempo agotado'), 8000);          // por si algo se cuelga
+  const espera = setTimeout(() => irA('index.html', 'tiempo agotado'), 8000);        
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { clearTimeout(espera); return irA('index.html', 'sin sesión'); }
