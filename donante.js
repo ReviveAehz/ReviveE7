@@ -1,8 +1,8 @@
-// ===== Utilidades =====
+// Utilidades
 const $ = id => document.getElementById(id);
 const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; };
 
-// ===== Catálogo de módulos y tipos de artículo (sepáralos con |) =====
+// Catálogo de módulos y tipos de artículo
 const catalogo = {
   'Ropa': 'Camiseta|Camisa|Blusa|Top|Sudadera|Jersey|Chaqueta|Abrigo|Chaleco|Cazadora|Pantalón|Vaqueros|Shorts|Falda|Vestido|Mono|Peto|Mallas|Pijama|Ropa interior|Traje de baño|Calcetines',
   'Calzado': 'Zapatillas deportivas|Zapatos de vestir / Formales|Botas|Botines|Sandalias / Chanclas|Bailarinas / Manoletinas|Mocasines|Calzado infantil / Bebé|Zapatillas de estar por casa|Botas de agua / Trabajo',
@@ -18,17 +18,17 @@ const OTRO = 'Otro (escribir)';
 const cats = Object.keys(catalogo);
 const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-// ===== Centros de acopio (cámbialos por los reales o tráelos de la base de datos) =====
+// Centros de acopio
 const centros = [];
 
-// ===== Datos en memoria: aquí se conectará la base de datos =====
+// Datos en memoria
 const items = [], entregas = [], dineros = [];
 let editando = null, nid = 1, refDinero = '';
 const semana = d => Math.floor(d / 6048e5);
 const fmt = d => new Date(d + 'T00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'long' });
 const pesos = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n);
 
-// ===== Ventanas y pestañas =====
+// Ventanas y pestañas
 document.querySelectorAll('[data-dlg]').forEach(b => b.onclick = () => $(b.dataset.dlg).showModal());
 document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d || e.target.hasAttribute('data-cerrar')) d.close(); }));
 const tabs = document.querySelectorAll('[data-tab]');
@@ -38,7 +38,7 @@ tabs.forEach(t => t.onclick = () => {
 });
 function gracias(msg) { const g = $('gracias'); g.textContent = msg || '¡Gracias por donar! 💙'; g.hidden = false; setTimeout(() => g.hidden = true, 3000); }
 
-// ===== Formulario de artículo (agregar / editar) =====
+// Formulario de artículo
 function llenarTipos(cat) {
   const t = $('a-tipo'); t.replaceChildren();
   catalogo[cat].split('|').concat(OTRO).forEach(x => t.append(new Option(x)));
@@ -84,7 +84,7 @@ $('f-art').onsubmit = async e => {
   } finally { btn.disabled = false; }
 };
 
-// ===== Ver información, editar, eliminar =====
+// Ver información, editar, eliminar
 function ver(i) {
   const f = $('ver-cuerpo'); f.replaceChildren();
   [['Artículo', i.nom], ['Módulo', i.cat], ['Cantidad', i.cant], ['Condición', i.cond], ['Estado', i.estado],
@@ -112,7 +112,7 @@ async function eliminar(i) {
   items.splice(items.indexOf(i), 1); render();
 }
 
-// ===== Donar artículos: centro + artículos + fecha y hora =====
+// Donar artículso
 centros.forEach(c => $('d-centro').append(new Option(c.nombre, c.id)));
 function infoCentro() {
   const c = centros.find(x => x.id === $('d-centro').value);
@@ -156,7 +156,7 @@ $('f-donar').onsubmit = async e => {
   finally { btn.disabled = false; }
 };
 
-// ===== Donar dinero (transferencia) =====
+// Donar dinero
 centros.forEach(c => $('m-centro').append(new Option(c.nombre, c.id)));
 
 function copiar(txt, btn) {
@@ -206,7 +206,7 @@ $('f-dinero').onsubmit = async e => {
   finally { btn.disabled = false; }
 };
 
-// ===== Dibujar todo =====
+// Dibujar todo
 const badge = e => el('span', 'badge' + (e === 'Entregado' || e === 'Confirmada' ? ' ok' : e === 'Listo para entregar' ? ' listo' : ''), e);
 async function cancelarTransferencia(d) {
   if (!confirm('¿Cancelar el registro de la transferencia ' + d.ref + '?\n\nEsto solo elimina el registro en Revive. Si ya hiciste la transferencia en tu banco, el dinero no se devuelve: habla con el centro.')) return;
@@ -226,7 +226,7 @@ function render() {
   const activos = items.filter(i => i.estado !== 'Entregado');
   const listos = activos.filter(i => i.estado === 'Listo para entregar');
 
-  // Inventario por módulos (el estado solo se muestra: lo cambia el centro)
+  // Inventario por módulos
   const q = $('buscar').value.trim().toLowerCase(), cont = $('inv-lista');
   cont.replaceChildren();
   cats.forEach(c => {
@@ -246,7 +246,7 @@ function render() {
   });
   $('inv-vacio').hidden = activos.length > 0;
 
-  // Tus donaciones: artículos (entregas por centro)
+  // Tus donaciones: artículos
   const dl = $('don-lista'); dl.replaceChildren();
   entregas.sort((a, b) => a.fecha.localeCompare(b.fecha)).forEach(en => {
     const t = el('article', 'tarjeta entrega');
@@ -267,7 +267,7 @@ function render() {
   });
   $('don-vacio').hidden = entregas.length > 0;
 
-  // Tus donaciones: dinero
+  // Tus donaciones
   const ml = $('din-lista'); ml.replaceChildren();
   dineros.forEach(d => {
     const t = el('article', 'tarjeta entrega');
@@ -294,7 +294,7 @@ function render() {
   av.hidden = !listos.length;
   av.textContent = listos.length ? 'El centro marcó ' + listos.length + ' artículo(s) como listos para entregar. Llévalos en la fecha acordada.' : '';
 
-  // Racha (semanas seguidas con al menos una entrega recibida)
+  // Racha
   const sem = new Set(entregados.map(i => semana(i.fecha)));
   let w = semana(Date.now()); if (!sem.has(w)) w--;
   let racha = 0; while (sem.has(w)) { racha++; w--; }
@@ -321,10 +321,9 @@ $('buscar').oninput = render;
 $('anio').textContent = new Date().getFullYear();
 render();
 
-// ===== Perfil =====
-// DATOS DE EJEMPLO: aquí llegarán los datos reales de la persona desde la base de datos
+// Perfil
 const perfil = { nombre: 'Nombre', ap: 'Apellido', am: 'Apellido', fecha: '2000-01-01', correo: 'correo@ejemplo.com', ubic: 'Ciudad, estado', tel: '', foto: '' };
-let fotoTmp = null;   // foto elegida pero aún sin guardar
+let fotoTmp = null;
 
 const iniciales = () => ((perfil.nombre[0] || '') + (perfil.ap[0] || '')).toUpperCase() || 'DN';
 function ponerFoto(a, url, ini) { a.textContent = url ? '' : ini; a.style.backgroundImage = url ? 'url("' + url + '")' : ''; }
@@ -352,7 +351,7 @@ $('pf-archivo').onchange = e => {
 };
 $('pf-quitar').onclick = () => { fotoTmp = ''; ponerFoto($('pf-foto'), '', iniciales()); };
 
-// Guardar datos personales (aquí se enviarán a la base de datos)
+// Guardar datos personales
 $('f-perfil').onsubmit = e => {
   e.preventDefault();
   Object.assign(perfil, {
@@ -364,7 +363,7 @@ $('f-perfil').onsubmit = e => {
   gracias('Perfil actualizado ✓');
 };
 
-// Cambiar contraseña (aquí la verificará y guardará el servidor)
+// Cambiar contraseña
 const pn = $('pw-new'), pn2 = $('pw-new2');
 const igual = () => pn2.setCustomValidity(pn.value === pn2.value ? '' : 'Las contraseñas no coinciden');
 pn.oninput = pn2.oninput = igual;
@@ -373,15 +372,14 @@ $('f-pass').onsubmit = e => {
   gracias('Contraseña actualizada ✓');
 };
 
-// Eliminar cuenta (aquí se borrará en la base de datos)
+// Eliminar cuenta
 $('pf-eliminar').onclick = () => {
   if (confirm('¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) location.href = 'index.html';
 };
 
 cargarPerfil();
 
-// ===== Así se usó tu donación =====
-// EJEMPLOS: los centros enviarán estos reportes desde su panel. Borra los de ejemplo al conectar la base de datos.
+// Así se usó tu donación
 const reportes = [];
 
 function pintarImpacto() {
@@ -406,15 +404,13 @@ function pintarImpacto() {
 }
 $('tab-impacto').addEventListener('click', () => { reportes.forEach(r => r.nuevo = false); pintarImpacto(); });
 
-// SOLO PARA PRUEBAS: el centro enviará esto desde su panel. En la consola:
-// centroEnviaReporte({ centro: 'Nombre', donacion: 'Ropa × 3', texto: 'Mensaje', foto: 'enlace-de-imagen' })
 window.centroEnviaReporte = d => {
   reportes.unshift({ id: Date.now(), fecha: new Date().toISOString().slice(0, 10), gracias: false, nuevo: true, ...d });
   pintarImpacto();
 };
 pintarImpacto();
 
-// ===== Centros, donaciones y dinero en Supabase =====
+// Centros, donaciones y dinero en Supabase
 const ESTADO_ART = { pendiente: 'Pendiente', listo_para_entregar: 'Listo para entregar', entregado: 'Entregado' };
 const ESTADO_TRANSF = { por_confirmar: 'Por confirmar', confirmada: 'Confirmada', no_encontrada: 'No encontrada' };
 
@@ -485,7 +481,7 @@ async function cargarDinero() {
     comp: t.comprobante_ruta ? t.comprobante_ruta.split('/').pop() : '', ruta: t.comprobante_ruta, estado: ESTADO_TRANSF[t.estado] }));
 }
 
-// ===== Inventario en Supabase =====
+// Inventario en Supabase
 let usuarioId = null;
 const tipoIds = {};                                  // 'Categoría|Tipo' → id en la base
 const CONDICION = { 'Nuevo': 'nuevo', 'Buen estado': 'buen_estado', 'Usado': 'usado' };
@@ -514,7 +510,7 @@ async function cargarInventario() {
   render();
 }
 
-// ===== Sesión real (Supabase) =====
+// Sesión real
 iniciarPagina('donante', async user => {
   usuarioId = user.id;
   const { data: d, error } = await sb.from('donantes').select('*').eq('usuario_id', user.id).single();
@@ -535,11 +531,8 @@ iniciarPagina('donante', async user => {
   } catch (x) { console.error(x); alert('No pudimos cargar tus datos. Recarga la página.'); }
 });
 
-// =====================================================================
-//  PASO F: impacto, perfil, soporte y cuenta (Supabase)
-// =====================================================================
-
-// ----- Recomendaciones y reportes de errores -----
+//  impacto, perfil, soporte y cuenta (Supabase)
+// Recomendaciones y reportes de errores
 [['d-reco', 'r-t', 'recomendacion', 'Gracias por tu recomendación 💙'],
  ['d-error', 'e-t', 'error', 'Recibimos tu reporte. Gracias por avisarnos 💙']].forEach(([dlg, campo, tipo, aviso]) => {
   const f = $(dlg).querySelector('form');
@@ -556,7 +549,7 @@ iniciarPagina('donante', async user => {
   };
 });
 
-// ----- Así se usó tu donación -----
+// Así se usó tu donación
 async function cargarImpacto() {
   const { data, error } = await sb.from('reportes_impacto')
     .select('id, mensaje, creado_en, visto, gracias_enviado, reporte_fotos(ruta, orden), donaciones!inner(donante_id, centros(nombre), donacion_articulos(articulos(cantidad, detalle, tipos_articulo(nombre))))')
@@ -620,7 +613,7 @@ $('tab-impacto').addEventListener('click', async () => {      // al abrir la pes
   if (error) console.error(error);
 });
 
-// ----- Perfil: datos y foto -----
+// Perfil: datos y foto
 let fotoArchivo = null;
 $('pf-archivo').onchange = e => {
   const f = e.target.files[0]; if (!f) return;
@@ -653,7 +646,7 @@ $('f-perfil').onsubmit = async e => {
   finally { btn.disabled = false; }
 };
 
-// ----- Perfil: contraseña -----
+// Perfil: contraseña
 $('f-pass').onsubmit = async e => {
   e.preventDefault();
   const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true;
@@ -667,7 +660,7 @@ $('f-pass').onsubmit = async e => {
   finally { btn.disabled = false; }
 };
 
-// ----- Eliminar mi cuenta -----
+// Eliminar mi cuenta
 $('pf-eliminar').onclick = async () => {
   if (!confirm('¿Seguro que quieres eliminar tu cuenta? Se borrarán tu perfil, tu inventario y tus donaciones. No se puede deshacer.')) return;
   const { data: archivos } = await sb.storage.from('publico').list(usuarioId);          // tu foto de perfil
@@ -677,7 +670,7 @@ $('pf-eliminar').onclick = async () => {
   await sb.auth.signOut(); location.replace('index.html');
 };
 
-// ===== Validaciones de los campos =====
+// Validaciones de los campos
 V.aplicar({
   'a-otro': V.lugar(100, false), 'a-cant': V.entero(1, 9999), 'a-cad': V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 3650), false),
   'a-nota': V.libre(255, false, false),
@@ -688,6 +681,5 @@ V.aplicar({
   'pw-act': V.passLogin(), 'pw-new': V.password(), 'r-t': V.libre(2000), 'e-t': V.libre(2000)
 });
 V.archivos({ 'm-comp': { tipos: V.DOC }, 'pf-archivo': { tipos: V.IMG } });
-// si se cambia de categoría, se limpian los campos que quedaron ocultos para que no bloqueen el envío
 function limpiarOcultos() { setTimeout(() => { [['w-cad', 'a-cad'], ['w-otro', 'a-otro']].forEach(([w, c]) => { if ($(w) && $(w).hidden && $(c)) { $(c).value = ''; $(c).setCustomValidity(''); } }); }, 0); }
 ['a-cat', 'a-tipo'].forEach(id => $(id).addEventListener('change', limpiarOcultos));
