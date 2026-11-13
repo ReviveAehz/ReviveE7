@@ -7,9 +7,9 @@ menuBtn.addEventListener('click', () => { menuBtn.setAttribute('aria-expanded', 
 
 const TIPOS = ['Albergue', 'Casa hogar', 'Comedor comunitario', 'Asociación civil', 'Iglesia o parroquia', 'Otro'];
 TIPOS.forEach(t => $('f-tipo').append(new Option(t)));
-const enlaceSeguro = u => /^https?:\/\//i.test(u) ? u : '';   // evita enlaces peligrosos
+const enlaceSeguro = u => /^https?:\/\//i.test(u) ? u : '';
 
-let centros = [];                 // llegan desde Supabase
+let centros = [];
 let cargado = false;
 
 function render() {
