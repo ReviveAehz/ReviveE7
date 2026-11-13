@@ -1,4 +1,4 @@
-/* ============ PALETA (equipo 7) ============ */
+
 :root {
     --rosa:        #FFE5E5;
     --blanco:      #FFFFFF;
@@ -8,7 +8,6 @@
     --azul-900:    #0D47A1;
     --negro:       #000000;
   
-    /* Tipografía */
     --f-h1: "Linden Hill", Georgia, serif;
     --f-h2: "Roboto Serif", Georgia, serif;
     --f-h3: "Afacad", system-ui, sans-serif;
@@ -47,11 +46,9 @@
   .fondo-oscuro { background: var(--azul-900); color: var(--blanco); }
   .fondo-oscuro a { color: var(--azul-300); }
   
-  /* Texto de relleno: reemplázalo con tu contenido */
   .relleno { color: #3b4a5a; border-left: 4px solid var(--azul-300); padding-left: 1rem; }
   .fondo-oscuro .relleno { color: var(--azul-100); border-color: var(--azul-500); }
   
-  /* ============ BOTONES ============ */
   .btn {
     display: inline-flex; align-items: center; justify-content: center;
     font-family: var(--f-h4); font-size: 1rem;
@@ -66,7 +63,6 @@
   .btn.azul { background: var(--azul-500); border-color: var(--negro); color: var(--negro); }
   .btn.azul:hover { background: var(--azul-300); }
   
-  /* ============ NAVEGACIÓN ============ */
   header.nav {
     position: sticky; top: 0; z-index: 50;
     background: var(--blanco); border-bottom: 2px solid var(--negro);
@@ -91,14 +87,12 @@
     .nav ul a { display: block; padding: .6rem 0; }
   }
   
-  /* ============ HERO ============ */
   .hero { background: var(--rosa); padding-block: clamp(3rem, 7vw, 5.5rem); border-bottom: 2px solid var(--negro); }
   .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: center; }
   .hero p.lead { font-size: 1.25rem; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.5rem; }
   @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
   
-  /* ============ GRIDS Y TARJETAS ============ */
   .grid { display: grid; gap: 1.5rem; }
   .g2 { grid-template-columns: repeat(2, 1fr); }
   .g3 { grid-template-columns: repeat(3, 1fr); }
@@ -159,7 +153,6 @@
   .persona { text-align: left; }
   .avatar { width: 72px; height: 72px; border-radius: 50%; border: 2px solid var(--negro); background: var(--azul-300); display: grid; place-items: center; font-family: var(--f-h4); font-size: 1.4rem; margin-bottom: .8rem; }
   
-  /* ============ FORMULARIOS ============ */
   label { display: block; font-family: var(--f-h3); font-size: 1.1rem; font-weight: 600; margin-bottom: .3rem; }
   input, select, textarea {
     width: 100%; font: inherit; padding: .75rem 1rem;
@@ -175,7 +168,6 @@
   .datos-contacto li { margin-bottom: .9rem; }
   .datos-contacto strong { font-family: var(--f-h4); font-weight: 400; display: block; }
   
-  /* ============ MODAL INICIAR SESIÓN ============ */
   dialog { border: 2px solid var(--negro); border-radius: var(--radio); padding: 0; width: min(92vw, 440px); box-shadow: 8px 8px 0 var(--azul-500); }
   dialog::backdrop { background: rgba(13, 71, 161, .55); }
   .modal-cab { background: var(--negro); color: var(--blanco); padding: 1rem 1.4rem; display: flex; justify-content: space-between; align-items: center; }
@@ -189,13 +181,11 @@
   .roles input:focus-visible + label { outline: 3px solid var(--azul-500); outline-offset: 2px; }
   .modal-pie { margin-top: 1rem; font-size: .95rem; text-align: center; }
   
-  /* ============ REGISTRO DE DONANTE ============ */
   dialog.ancho { width: min(94vw, 640px); max-height: 92vh; overflow-y: auto; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1rem; }
   .form-grid .completo { grid-column: 1 / -1; }
   @media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }
   
-  /* ============ FOOTER ============ */
   footer.pie { background: var(--negro); color: var(--blanco); padding: 3rem 0 1.5rem; }
   footer.pie a { color: var(--azul-300); }
   .pie-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
@@ -209,12 +199,9 @@
     * { transition: none !important; }
   }
   
-  /* =====================================================
-     PANEL DE DONANTE (donante.html)
-     ===================================================== */
+  /* PANEL DE DONANTE (donante.html) */
   body.app { display: grid; grid-template-columns: 270px 1fr; min-height: 100vh; background: var(--azul-100); }
   
-  /* Barra lateral izquierda */
   .lateral { background: var(--azul-900); color: var(--blanco); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 0; height: 100vh; border-right: 2px solid var(--negro); }
   .logo-lat { font-family: var(--f-h4); font-size: 1.4rem; color: var(--blanco); text-decoration: none; }
   .usuario { display: flex; align-items: center; gap: .8rem; }
@@ -229,7 +216,6 @@
   .lateral nav button:hover, .lateral nav a:hover { background: var(--azul-500); border-color: var(--negro); color: var(--negro); }
   .lateral nav a { border-top: 1px solid var(--azul-500); border-radius: 0 0 12px 12px; margin-top: .5rem; }
   
-  /* Página principal */
   .principal { padding: clamp(1.5rem, 4vw, 3rem); max-width: 1000px; width: 100%; }
   .principal h1 { font-size: clamp(2rem, 4vw, 3rem); }
   .principal h2 { font-size: 1.6rem; }
@@ -245,27 +231,23 @@
   .panel-cab h2 { margin: 0; }
   .vacio { color: #3b4a5a; background: var(--azul-100); border: 2px dashed var(--negro); border-radius: 12px; padding: 1.2rem; }
   
-  /* Inventario por módulos */
   .modulos { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem; }
   .modulo { background: var(--rosa); padding: 1.2rem; }
   .art { display: flex; justify-content: space-between; align-items: center; gap: .6rem; padding: .5rem 0; border-top: 1px solid var(--negro); }
   .art button { font: inherit; font-size: .85rem; background: var(--blanco); border: 1.5px solid var(--negro); border-radius: 999px; padding: .15rem .7rem; cursor: pointer; }
   .art button:hover { background: var(--azul-300); }
   
-  /* Rachas */
   .racha { background: var(--azul-100); display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem; margin-bottom: 1rem; }
   .racha strong { font-family: var(--f-h2); font-size: 3rem; line-height: 1; }
   .racha .dias { flex-basis: 100%; display: flex; gap: .5rem; margin-top: .6rem; }
   .racha .dias i { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--negro); background: var(--blanco); }
   
-  /* Tabla anual */
   .tabla-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; }
   th, td { text-align: left; padding: .7rem 1rem; border-bottom: 1px solid var(--azul-300); }
   th { font-family: var(--f-h4); font-weight: 400; background: var(--negro); color: var(--blanco); }
   tbody tr:nth-child(even) { background: var(--azul-100); }
   
-  /* Móvil: la barra lateral pasa arriba */
   @media (max-width: 800px) {
     body.app { grid-template-columns: 1fr; }
     .lateral { position: static; height: auto; border-right: 0; border-bottom: 2px solid var(--negro); }
@@ -273,7 +255,6 @@
     .lateral nav a { border-top: 0; margin-top: 0; border-radius: 12px; }
   }
 
-  /* ===== Extras del panel de donante ===== */
 .resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem; }
 .stat { background: var(--blanco); padding: 1.1rem 1.3rem; }
 .stat strong { display: block; font-family: var(--f-h2); font-size: 2rem; line-height: 1.1; }
@@ -299,7 +280,6 @@
 
 .gracias { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--negro); color: var(--blanco); font-family: var(--f-h4); padding: .8rem 1.6rem; border-radius: 999px; border: 2px solid var(--azul-300); z-index: 100; max-width: none; }
 
-/* ===== Inventario por módulos (v2) ===== */
 .modulos { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
 .botones { display: flex; flex-wrap: wrap; gap: .6rem; }
 .art { flex-wrap: wrap; }
@@ -310,7 +290,6 @@
 .dato { margin: 0 0 .5rem; }
 #ver-cuerpo { margin-bottom: 1rem; }
 
-/* ===== Donaciones con varios centros ===== */
 .badge { font-family: var(--f-h4); font-size: .85rem; border: 1.5px solid var(--negro); border-radius: 999px; padding: .1rem .8rem; background: var(--rosa); white-space: nowrap; }
 .badge.listo { background: var(--azul-300); }
 .badge.ok { background: var(--azul-500); }
@@ -322,7 +301,6 @@
 #d-info { margin: .6rem 0 0; font-size: .95rem; }
 #centros-lista .necesita { margin: .5rem 0 1rem; }
 
-/* ===== Perfil ===== */
 .avatar, .pf-foto { background-size: cover; background-position: center; }
 .pf-cab { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
 .pf-foto { width: 96px; height: 96px; border-radius: 50%; border: 2px solid var(--negro); background-color: var(--azul-300); display: grid; place-items: center; font-family: var(--f-h4); font-size: 2rem; flex: none; }
@@ -337,7 +315,6 @@ input[readonly] { background: var(--azul-100); color: #3b4a5a; cursor: not-allow
 .pf-peligro { margin-top: 1.5rem; border: 2px solid var(--negro); border-radius: 14px; padding: 1rem 1.3rem; background: var(--rosa); }
 .pf-peligro h4 { margin: 0 0 .3rem; }
 
-/* ===== Donar dinero ===== */
 .datos-banco { background: var(--azul-100); border: 2px solid var(--negro); border-radius: 12px; padding: .4rem 1rem; margin-bottom: 1.1rem; }
 .dato-banco { display: flex; align-items: center; gap: .8rem; padding: .6rem 0; border-bottom: 1px solid var(--azul-300); flex-wrap: wrap; }
 .dato-banco:last-child { border-bottom: 0; }
@@ -347,7 +324,6 @@ input[readonly] { background: var(--azul-100); color: #3b4a5a; cursor: not-allow
 .dato-banco button:hover { background: var(--azul-300); }
 .panel-cab h3 { margin: 0; }
 
-/* ===== Así se usó tu donación ===== */
 .reporte { background: var(--azul-100); display: flex; flex-direction: column; gap: .5rem; }
 .reporte h3 { margin: .3rem 0 0; }
 .reporte .meta { margin: 0; color: #3b4a5a; }
@@ -357,7 +333,6 @@ input[readonly] { background: var(--azul-100); color: #3b4a5a; cursor: not-allow
 .foto-rep img { width: 100%; height: 100%; object-fit: cover; }
 .btn:disabled { opacity: .65; cursor: default; }
 
-/* ===== Registro de centro de acopio ===== */
 .form-grid[hidden] { display: none; }
 .form-grid .subtitulo { grid-column: 1 / -1; margin: .6rem 0 .8rem; padding-top: 1rem; border-top: 2px solid var(--negro); }
 .form-grid .subtitulo:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
@@ -365,7 +340,6 @@ input[readonly] { background: var(--azul-100); color: #3b4a5a; cursor: not-allow
 #centro-ok { text-align: center; padding: .5rem 0; }
 #centro-ok .relleno { text-align: left; margin-inline: auto; }
 
-/* ===== Panel del centro de acopio ===== */
 .miniaturas, .galeria { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .6rem; }
 .mini { position: relative; width: 84px; height: 84px; border: 2px solid var(--negro); border-radius: 12px; overflow: hidden; }
 .mini img, .galeria img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -375,7 +349,6 @@ input[readonly] { background: var(--azul-100); color: #3b4a5a; cursor: not-allow
 .contactos li { padding: .3rem 0; border-bottom: 1px solid var(--azul-300); word-break: break-word; }
 .ayuda.excede { color: #b00020; font-weight: 700; }
 
-/* ===== Página pública de centros (visitante) ===== */
 .filtros { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
 @media (max-width: 700px) { .filtros { grid-template-columns: 1fr; } }
 .invitacion .relleno { margin-bottom: 1.2rem; }
@@ -384,7 +357,6 @@ input[readonly] { background: var(--azul-100); color: #3b4a5a; cursor: not-allow
 #lista .tarjeta p { margin: 0; }
 #lista .btn { align-self: flex-start; margin-top: auto; }
 
-/* ===== Página de inicio: interacciones y secciones nuevas ===== */
 .rota { display: inline-block; background: linear-gradient(transparent 62%, var(--azul-300) 62%); transition: opacity .3s, transform .3s; }
 .rota.sale { opacity: 0; transform: translateY(-.25em); }
 .confianza { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .6rem; }
