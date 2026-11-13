@@ -1,9 +1,3 @@
-// =====================================================================
-//  validar.js: validaciones compartidas por todas las páginas de Revive
-//  Carga después de config.js:  <script src="validar.js"></script>
-//  Las reglas también existen en la base de datos (revive_validaciones.sql): la página
-//  avisa bien al usuario, pero la base es quien realmente protege los datos.
-// =====================================================================
 const V = (() => {
   // ---------- fechas ----------
   const local = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
