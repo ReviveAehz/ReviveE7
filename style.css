@@ -108,7 +108,6 @@
   .encabezado { margin-bottom: 2.5rem; }
   .encabezado p { font-size: 1.15rem; }
   
-  /* Bloque dividido (texto + imagen) */
   .split { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
   @media (max-width: 800px) { .split { grid-template-columns: 1fr; gap: 1.5rem; } }
   .espacio-imagen {
@@ -117,12 +116,10 @@
     padding: 1rem; font-family: var(--f-h3); font-size: 1.1rem;
   }
   
-  /* Misión / visión / objetivo */
   .mvo .tarjeta:nth-child(1) { background: var(--azul-100); }
   .mvo .tarjeta:nth-child(2) { background: var(--rosa); }
   .mvo .tarjeta:nth-child(3) { background: var(--azul-300); }
   
-  /* Perfiles de usuario */
   .perfil { display: flex; flex-direction: column; }
   .perfil ul { padding-left: 1.2rem; margin: 0 0 1.4rem; }
   .perfil li { margin-bottom: .35rem; }
@@ -130,26 +127,22 @@
   .perfil.donante { background: var(--azul-100); }
   .perfil.centro  { background: var(--rosa); }
   
-  /* Pasos */
   .pasos { counter-reset: paso; list-style: none; padding: 0; margin: 0; display: grid; gap: 1.2rem; grid-template-columns: repeat(4, 1fr); }
   .pasos li { counter-increment: paso; background: var(--blanco); color: var(--negro); border: 2px solid var(--negro); border-radius: var(--radio); padding: 1.4rem; }
   .pasos li::before { content: counter(paso); display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--azul-500); border: 2px solid var(--negro); font-family: var(--f-h4); margin-bottom: .8rem; }
   @media (max-width: 900px) { .pasos { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 560px) { .pasos { grid-template-columns: 1fr; } }
   
-  /* Impacto */
   .impacto { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
   .impacto div { border-top: 3px solid var(--azul-300); padding-top: 1rem; }
   .impacto strong { display: block; font-family: var(--f-h2); font-size: 2rem; line-height: 1.1; margin-bottom: .25rem; }
   @media (max-width: 700px) { .impacto { grid-template-columns: 1fr; } }
   
-  /* FAQ */
   details { background: var(--blanco); border: 2px solid var(--negro); border-radius: 14px; padding: 1rem 1.3rem; margin-bottom: .8rem; }
   summary { font-family: var(--f-h3); font-size: 1.2rem; font-weight: 600; cursor: pointer; }
   details[open] { background: var(--azul-100); }
   details p { margin: .8rem 0 0; }
   
-  /* Equipo */
   .persona { text-align: left; }
   .avatar { width: 72px; height: 72px; border-radius: 50%; border: 2px solid var(--negro); background: var(--azul-300); display: grid; place-items: center; font-family: var(--f-h4); font-size: 1.4rem; margin-bottom: .8rem; }
   
@@ -199,7 +192,6 @@
     * { transition: none !important; }
   }
   
-  /* PANEL DE DONANTE (donante.html) */
   body.app { display: grid; grid-template-columns: 270px 1fr; min-height: 100vh; background: var(--azul-100); }
   
   .lateral { background: var(--azul-900); color: var(--blanco); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 0; height: 100vh; border-right: 2px solid var(--negro); }
