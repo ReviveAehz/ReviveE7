@@ -1,8 +1,6 @@
-// Utilidades
 const $ = id => document.getElementById(id);
 const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; };
 
-// Catálogo de módulos y tipos de artículo
 const catalogo = {
   'Ropa': 'Camiseta|Camisa|Blusa|Top|Sudadera|Jersey|Chaqueta|Abrigo|Chaleco|Cazadora|Pantalón|Vaqueros|Shorts|Falda|Vestido|Mono|Peto|Mallas|Pijama|Ropa interior|Traje de baño|Calcetines',
   'Calzado': 'Zapatillas deportivas|Zapatos de vestir / Formales|Botas|Botines|Sandalias / Chanclas|Bailarinas / Manoletinas|Mocasines|Calzado infantil / Bebé|Zapatillas de estar por casa|Botas de agua / Trabajo',
@@ -18,17 +16,14 @@ const OTRO = 'Otro (escribir)';
 const cats = Object.keys(catalogo);
 const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-// Centros de acopio
 const centros = [];
 
-// Datos en memoria
 const items = [], entregas = [], dineros = [];
 let editando = null, nid = 1, refDinero = '';
 const semana = d => Math.floor(d / 6048e5);
 const fmt = d => new Date(d + 'T00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'long' });
 const pesos = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n);
 
-// Ventanas y pestañas
 document.querySelectorAll('[data-dlg]').forEach(b => b.onclick = () => $(b.dataset.dlg).showModal());
 document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d || e.target.hasAttribute('data-cerrar')) d.close(); }));
 const tabs = document.querySelectorAll('[data-tab]');
@@ -38,7 +33,6 @@ tabs.forEach(t => t.onclick = () => {
 });
 function gracias(msg) { const g = $('gracias'); g.textContent = msg || '¡Gracias por donar! 💙'; g.hidden = false; setTimeout(() => g.hidden = true, 3000); }
 
-// Formulario de artículo
 function llenarTipos(cat) {
   const t = $('a-tipo'); t.replaceChildren();
   catalogo[cat].split('|').concat(OTRO).forEach(x => t.append(new Option(x)));
@@ -84,7 +78,6 @@ $('f-art').onsubmit = async e => {
   } finally { btn.disabled = false; }
 };
 
-// Ver información, editar, eliminar
 function ver(i) {
   const f = $('ver-cuerpo'); f.replaceChildren();
   [['Artículo', i.nom], ['Módulo', i.cat], ['Cantidad', i.cant], ['Condición', i.cond], ['Estado', i.estado],
@@ -112,7 +105,6 @@ async function eliminar(i) {
   items.splice(items.indexOf(i), 1); render();
 }
 
-// Donar artículso
 centros.forEach(c => $('d-centro').append(new Option(c.nombre, c.id)));
 function infoCentro() {
   const c = centros.find(x => x.id === $('d-centro').value);
@@ -147,7 +139,7 @@ $('f-donar').onsubmit = async e => {
     }).select('id').single();
     if (error) throw error;
     const { error: e2 } = await sb.from('donacion_articulos').insert(sel.map(i => ({ articulo_id: i.id, donacion_id: d.id })));
-    if (e2) { await sb.from('donaciones').delete().eq('id', d.id); throw e2; }   // sin artículos no queda donación a medias
+    if (e2) { await sb.from('donaciones').delete().eq('id', d.id); throw e2; }
     const en = { id: d.id, centro: c, fecha: $('d-fecha').value, hora: $('d-hora').value, nota, items: sel };
     sel.forEach(i => i.ent = en); entregas.push(en);
     e.target.reset(); $('d-donar').close(); render();
@@ -156,7 +148,6 @@ $('f-donar').onsubmit = async e => {
   finally { btn.disabled = false; }
 };
 
-// Donar dinero
 centros.forEach(c => $('m-centro').append(new Option(c.nombre, c.id)));
 
 function copiar(txt, btn) {
@@ -206,7 +197,6 @@ $('f-dinero').onsubmit = async e => {
   finally { btn.disabled = false; }
 };
 
-// Dibujar todo
 const badge = e => el('span', 'badge' + (e === 'Entregado' || e === 'Confirmada' ? ' ok' : e === 'Listo para entregar' ? ' listo' : ''), e);
 async function cancelarTransferencia(d) {
   if (!confirm('¿Cancelar el registro de la transferencia ' + d.ref + '?\n\nEsto solo elimina el registro en Revive. Si ya hiciste la transferencia en tu banco, el dinero no se devuelve: habla con el centro.')) return;
@@ -216,7 +206,7 @@ async function cancelarTransferencia(d) {
     alert('No se pudo cancelar. Puede que el centro ya haya revisado la transferencia.');
     return;
   }
-  if (d.ruta) await sb.storage.from('privado').remove([d.ruta]);      // borra también el comprobante
+  if (d.ruta) await sb.storage.from('privado').remove([d.ruta]);
   dineros.splice(dineros.indexOf(d), 1); render();
   gracias('Registro cancelado');
 }
@@ -226,7 +216,6 @@ function render() {
   const activos = items.filter(i => i.estado !== 'Entregado');
   const listos = activos.filter(i => i.estado === 'Listo para entregar');
 
-  // Inventario por módulos
   const q = $('buscar').value.trim().toLowerCase(), cont = $('inv-lista');
   cont.replaceChildren();
   cats.forEach(c => {
@@ -246,7 +235,6 @@ function render() {
   });
   $('inv-vacio').hidden = activos.length > 0;
 
-  // Tus donaciones: artículos
   const dl = $('don-lista'); dl.replaceChildren();
   entregas.sort((a, b) => a.fecha.localeCompare(b.fecha)).forEach(en => {
     const t = el('article', 'tarjeta entrega');
@@ -267,7 +255,6 @@ function render() {
   });
   $('don-vacio').hidden = entregas.length > 0;
 
-  // Tus donaciones
   const ml = $('din-lista'); ml.replaceChildren();
   dineros.forEach(d => {
     const t = el('article', 'tarjeta entrega');
@@ -284,7 +271,6 @@ function render() {
   $('din-vacio').hidden = dineros.length > 0;
   $('din-total').textContent = pesos(dineros.filter(d => d.estado === 'Confirmada' && new Date(d.fecha).getFullYear() === anio).reduce((t, d) => t + d.monto, 0));
 
-  // Resumen y recordatorio
   const delAnio = entregados.filter(i => new Date(i.fecha).getFullYear() === anio);
   const prox = entregas.filter(en => en.items.some(i => i.estado !== 'Entregado'));
   $('s-don').textContent = delAnio.reduce((t, i) => t + Number(i.cant), 0);
@@ -294,14 +280,12 @@ function render() {
   av.hidden = !listos.length;
   av.textContent = listos.length ? 'El centro marcó ' + listos.length + ' artículo(s) como listos para entregar. Llévalos en la fecha acordada.' : '';
 
-  // Racha
   const sem = new Set(entregados.map(i => semana(i.fecha)));
   let w = semana(Date.now()); if (!sem.has(w)) w--;
   let racha = 0; while (sem.has(w)) { racha++; w--; }
   $('racha-n').textContent = racha;
   document.querySelectorAll('.dias i').forEach((d, k) => d.style.background = k < racha ? 'var(--azul-500)' : '');
 
-  // Logros
   const logros = [
     ['Primera donación', entregados.length >= 1], ['5 artículos donados', entregados.length >= 5],
     ['Racha de 4 semanas', racha >= 4], ['Primera entrega programada', entregas.length >= 1],
@@ -310,7 +294,6 @@ function render() {
   const lg = $('logros'); lg.replaceChildren();
   logros.forEach(([t, ok]) => lg.append(el('span', 'logro' + (ok ? ' on' : ''), (ok ? '★ ' : '☆ ') + t)));
 
-  // Tabla anual
   $('anual').replaceChildren(...meses.map((m, k) => {
     const tr = el('tr'), n = delAnio.filter(i => new Date(i.fecha).getMonth() === k).reduce((t, i) => t + Number(i.cant), 0);
     tr.append(el('td', '', m), el('td', '', n)); return tr;
@@ -321,7 +304,6 @@ $('buscar').oninput = render;
 $('anio').textContent = new Date().getFullYear();
 render();
 
-// Perfil
 const perfil = { nombre: 'Nombre', ap: 'Apellido', am: 'Apellido', fecha: '2000-01-01', correo: 'correo@ejemplo.com', ubic: 'Ciudad, estado', tel: '', foto: '' };
 let fotoTmp = null;
 
@@ -334,7 +316,7 @@ function pintarPerfil() {
   ponerFoto($('u-ini'), perfil.foto, iniciales());
   ponerFoto($('pf-foto'), perfil.foto, iniciales());
 }
-function cargarPerfil() {   // llena el formulario con los datos guardados (y descarta lo no guardado)
+function cargarPerfil() {
   fotoTmp = null;
   [['p-nombre', 'nombre'], ['p-ap', 'ap'], ['p-am', 'am'], ['p-fecha', 'fecha'], ['p-correo', 'correo'], ['p-ubic', 'ubic'], ['p-tel', 'tel']]
     .forEach(([id, k]) => $(id).value = perfil[k]);
@@ -344,14 +326,12 @@ function cargarPerfil() {   // llena el formulario con los datos guardados (y de
 $('d-perfil').addEventListener('close', cargarPerfil);
 $('pf-cancelar').onclick = () => $('d-perfil').close();
 
-// Foto
 $('pf-archivo').onchange = e => {
   const f = e.target.files[0]; if (!f) return;
   fotoTmp = URL.createObjectURL(f); ponerFoto($('pf-foto'), fotoTmp, ''); e.target.value = '';
 };
 $('pf-quitar').onclick = () => { fotoTmp = ''; ponerFoto($('pf-foto'), '', iniciales()); };
 
-// Guardar datos personales
 $('f-perfil').onsubmit = e => {
   e.preventDefault();
   Object.assign(perfil, {
@@ -363,7 +343,6 @@ $('f-perfil').onsubmit = e => {
   gracias('Perfil actualizado ✓');
 };
 
-// Cambiar contraseña
 const pn = $('pw-new'), pn2 = $('pw-new2');
 const igual = () => pn2.setCustomValidity(pn.value === pn2.value ? '' : 'Las contraseñas no coinciden');
 pn.oninput = pn2.oninput = igual;
@@ -372,14 +351,12 @@ $('f-pass').onsubmit = e => {
   gracias('Contraseña actualizada ✓');
 };
 
-// Eliminar cuenta
 $('pf-eliminar').onclick = () => {
   if (confirm('¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) location.href = 'index.html';
 };
 
 cargarPerfil();
 
-// Así se usó tu donación
 const reportes = [];
 
 function pintarImpacto() {
@@ -393,9 +370,9 @@ function pintarImpacto() {
     const b = el('div', 'botones');
     const g = el('button', 'btn' + (r.gracias ? ' claro' : ' azul'), r.gracias ? 'Gracias enviado 💙' : 'Dar gracias 💙');
     g.disabled = r.gracias;
-    g.onclick = () => { r.gracias = true; pintarImpacto(); gracias('Le avisamos al centro 💙'); };   // aquí se avisará al centro
+    g.onclick = () => { r.gracias = true; pintarImpacto(); gracias('Le avisamos al centro 💙'); };
     const x = el('button', 'btn claro', 'Reportar foto');
-    x.onclick = () => { if (confirm('¿Reportar esta publicación como inapropiada? Dejará de mostrarse.')) { r.oculto = true; pintarImpacto(); gracias('Gracias por avisarnos'); } };   // aquí se avisará al equipo
+    x.onclick = () => { if (confirm('¿Reportar esta publicación como inapropiada? Dejará de mostrarse.')) { r.oculto = true; pintarImpacto(); gracias('Gracias por avisarnos'); } };
     b.append(g, x); a.append(b); l.append(a);
   });
   $('imp-vacio').hidden = visibles.length > 0;
@@ -410,7 +387,6 @@ window.centroEnviaReporte = d => {
 };
 pintarImpacto();
 
-// Centros, donaciones y dinero en Supabase
 const ESTADO_ART = { pendiente: 'Pendiente', listo_para_entregar: 'Listo para entregar', entregado: 'Entregado' };
 const ESTADO_TRANSF = { por_confirmar: 'Por confirmar', confirmada: 'Confirmada', no_encontrada: 'No encontrada' };
 
@@ -481,14 +457,13 @@ async function cargarDinero() {
     comp: t.comprobante_ruta ? t.comprobante_ruta.split('/').pop() : '', ruta: t.comprobante_ruta, estado: ESTADO_TRANSF[t.estado] }));
 }
 
-// Inventario en Supabase
 let usuarioId = null;
-const tipoIds = {};                                  // 'Categoría|Tipo' → id en la base
+const tipoIds = {};
 const CONDICION = { 'Nuevo': 'nuevo', 'Buen estado': 'buen_estado', 'Usado': 'usado' };
 const COND_TEXTO = { nuevo: 'Nuevo', buen_estado: 'Buen estado', usado: 'Usado' };
 const SEL = 'id, cantidad, condicion, caducidad, notas, detalle, creado_en, tipos_articulo(nombre, categorias(nombre))';
 
-function aItem(r) {                                  // fila de la base → objeto que usa la página
+function aItem(r) {
   const tipo = r.tipos_articulo.nombre;
   return { id: r.id, cat: r.tipos_articulo.categorias.nombre, tipo,
            nom: tipo === OTRO ? (r.detalle || OTRO) : tipo,
@@ -510,7 +485,6 @@ async function cargarInventario() {
   render();
 }
 
-// Sesión real
 iniciarPagina('donante', async user => {
   usuarioId = user.id;
   const { data: d, error } = await sb.from('donantes').select('*').eq('usuario_id', user.id).single();
@@ -531,8 +505,6 @@ iniciarPagina('donante', async user => {
   } catch (x) { console.error(x); alert('No pudimos cargar tus datos. Recarga la página.'); }
 });
 
-//  impacto, perfil, soporte y cuenta (Supabase)
-// Recomendaciones y reportes de errores
 [['d-reco', 'r-t', 'recomendacion', 'Gracias por tu recomendación 💙'],
  ['d-error', 'e-t', 'error', 'Recibimos tu reporte. Gracias por avisarnos 💙']].forEach(([dlg, campo, tipo, aviso]) => {
   const f = $(dlg).querySelector('form');
@@ -549,7 +521,6 @@ iniciarPagina('donante', async user => {
   };
 });
 
-// Así se usó tu donación
 async function cargarImpacto() {
   const { data, error } = await sb.from('reportes_impacto')
     .select('id, mensaje, creado_en, visto, gracias_enviado, reporte_fotos(ruta, orden), donaciones!inner(donante_id, centros(nombre), donacion_articulos(articulos(cantidad, detalle, tipos_articulo(nombre))))')
@@ -580,7 +551,7 @@ async function darGracias(r) {
 async function reportarFoto(r) {
   if (!confirm('¿Reportar esta publicación como inapropiada? Dejará de mostrarse y la revisará el equipo de Revive.')) return;
   const d = await sb.from('denuncias_foto').insert({ reporte_id: r.id, motivo: 'Reportada por el donante' });
-  if (d.error && d.error.code !== '23505') { console.error(d.error); return alert('No se pudo enviar el reporte.'); }   // 23505 = ya estaba reportada
+  if (d.error && d.error.code !== '23505') { console.error(d.error); return alert('No se pudo enviar el reporte.'); }
   const { error } = await sb.from('reportes_impacto').update({ oculto: true }).eq('id', r.id);
   if (error) { console.error(error); return alert('No se pudo ocultar la publicación.'); }
   reportes.splice(reportes.indexOf(r), 1); pintarImpacto(); gracias('Gracias por avisarnos');
@@ -605,7 +576,7 @@ function pintarImpacto() {
   const n = reportes.filter(r => r.nuevo).length;
   $('tab-impacto').textContent = 'Así se usó tu donación' + (n ? ' (' + n + ')' : '');
 }
-$('tab-impacto').addEventListener('click', async () => {      // al abrir la pestaña, los mensajes quedan como vistos
+$('tab-impacto').addEventListener('click', async () => {
   const ids = reportes.filter(r => !r.visto).map(r => r.id);
   if (!ids.length) return;
   reportes.forEach(r => { r.visto = true; });
@@ -613,7 +584,6 @@ $('tab-impacto').addEventListener('click', async () => {      // al abrir la pes
   if (error) console.error(error);
 });
 
-// Perfil: datos y foto
 let fotoArchivo = null;
 $('pf-archivo').onchange = e => {
   const f = e.target.files[0]; if (!f) return;
@@ -635,7 +605,7 @@ $('f-perfil').onsubmit = async e => {
     const { error } = await sb.from('donantes').update(campos).eq('usuario_id', usuarioId);
     if (error) throw error;
     if ('foto_ruta' in campos && ant && ant.foto_ruta && ant.foto_ruta !== campos.foto_ruta) {
-      const r = await sb.storage.from('publico').remove([ant.foto_ruta]);       // borra la foto anterior
+      const r = await sb.storage.from('publico').remove([ant.foto_ruta]);
       if (r.error) console.warn(r.error);
     }
     Object.assign(perfil, { nombre: campos.nombre, ap: campos.apellido_paterno, am: campos.apellido_materno,
@@ -646,7 +616,6 @@ $('f-perfil').onsubmit = async e => {
   finally { btn.disabled = false; }
 };
 
-// Perfil: contraseña
 $('f-pass').onsubmit = async e => {
   e.preventDefault();
   const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true;
@@ -660,17 +629,15 @@ $('f-pass').onsubmit = async e => {
   finally { btn.disabled = false; }
 };
 
-// Eliminar mi cuenta
 $('pf-eliminar').onclick = async () => {
   if (!confirm('¿Seguro que quieres eliminar tu cuenta? Se borrarán tu perfil, tu inventario y tus donaciones. No se puede deshacer.')) return;
-  const { data: archivos } = await sb.storage.from('publico').list(usuarioId);          // tu foto de perfil
+  const { data: archivos } = await sb.storage.from('publico').list(usuarioId);
   if (archivos && archivos.length) await sb.storage.from('publico').remove(archivos.map(f => usuarioId + '/' + f.name));
   const { error } = await sb.rpc('eliminar_mi_cuenta');
   if (error) { console.error(error); return alert('No se pudo eliminar la cuenta. Intenta de nuevo.'); }
   await sb.auth.signOut(); location.replace('index.html');
 };
 
-// Validaciones de los campos
 V.aplicar({
   'a-otro': V.lugar(100, false), 'a-cant': V.entero(1, 9999), 'a-cad': V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 3650), false),
   'a-nota': V.libre(255, false, false),
