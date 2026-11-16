@@ -1,4 +1,3 @@
-// Menú móvil
 const menuBtn = document.querySelector('.menu-btn');
 const menu = document.getElementById('menu');
 menuBtn.addEventListener('click', () => {
@@ -9,13 +8,11 @@ menu.addEventListener('click', e => {
   if (e.target.tagName === 'A') { menu.classList.remove('abierto'); menuBtn.setAttribute('aria-expanded', 'false'); }
 });
 
-// Modal de inicio de sesión
 const login = document.getElementById('login');
 document.querySelectorAll('[data-abrir-login]').forEach(b => b.addEventListener('click', () => login.showModal()));
 document.querySelectorAll('[data-cerrar-login]').forEach(b => b.addEventListener('click', () => login.close()));
 login.addEventListener('click', e => { if (e.target === login) login.close(); });
 
-// Registro de donante
 const registro = document.getElementById('registro');
 document.getElementById('abrir-registro').addEventListener('click', e => { e.preventDefault(); login.close(); registro.showModal(); });
 document.querySelectorAll('[data-cerrar-registro]').forEach(b => b.addEventListener('click', () => registro.close()));
@@ -24,7 +21,6 @@ const p1 = document.getElementById('r-pass'), p2 = document.getElementById('r-pa
 const validar = () => p2.setCustomValidity(p1.value === p2.value ? '' : 'Las contraseñas no coinciden');
 p1.addEventListener('input', validar); p2.addEventListener('input', validar);
 
-// Registro de centro de acopio
 const registroCentro = document.getElementById('registro-centro');
 const formCentro = document.getElementById('form-centro');
 const centroOk = document.getElementById('centro-ok');
@@ -36,13 +32,11 @@ const rp1 = document.getElementById('rc-pass'), rp2 = document.getElementById('r
 const validarCentro = () => rp2.setCustomValidity(rp1.value === rp2.value ? '' : 'Las contraseñas no coinciden');
 rp1.addEventListener('input', validarCentro); rp2.addEventListener('input', validarCentro);
 
-// Abrir registros desde cualquier botón
 document.querySelectorAll('[data-abrir-registro]').forEach(b => b.addEventListener('click', () => registro.showModal()));
 document.querySelectorAll('[data-abrir-registro-centro]').forEach(b => b.addEventListener('click', () => registroCentro.showModal()));
 
 const calma = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Palabra que cambia en el título
 const rota = document.getElementById('rota');
 const palabrasRota = ['ropa', 'alimentos', 'juguetes', 'útiles escolares', 'pañales', 'calzado', 'cobijas'];
 if (!calma) {
@@ -53,7 +47,6 @@ if (!calma) {
   }, 2400);
 }
 
-// Explorador de categorías
 const categorias = {
   'Ropa': { ej: ['Camisetas', 'Pantalones', 'Sudaderas', 'Abrigos', 'Pijamas', 'Calcetines', 'Ropa interior nueva'], tip: 'Limpia y en buen estado. La ropa interior, solo nueva.' },
   'Calzado': { ej: ['Zapatillas', 'Botas', 'Sandalias', 'Zapatos escolares', 'Calzado infantil'], tip: 'Que estén completos (el par) y sin suelas rotas.' },
@@ -79,14 +72,12 @@ Object.keys(categorias).forEach(n => {
 });
 verCategoria('Ropa');
 
-// Cómo funciona donante y centro
 document.querySelectorAll('[data-flujo]').forEach(b => b.addEventListener('click', () => {
   document.querySelectorAll('[data-flujo]').forEach(x => { const on = x === b; x.classList.toggle('activo', on); x.setAttribute('aria-pressed', on); });
   document.getElementById('flujo-donante').hidden = b.dataset.flujo !== 'donante';
   document.getElementById('flujo-centro').hidden = b.dataset.flujo !== 'centro';
 }));
 
-// Aparecer al hacer scroll y contadores
 const nums = document.querySelectorAll('[data-n]');
 function contarHasta(e) {
   const meta = Number(e.dataset.n); let t0;
@@ -106,7 +97,6 @@ if (!calma && 'IntersectionObserver' in window) {
   nums.forEach(n => n.textContent = n.dataset.n);
 }
 
-//  SUPABASE: inicio de sesión y registros
 function aviso(form, texto) {
   let p = form.querySelector('.aviso');
   if (!p) {
@@ -120,7 +110,6 @@ const textoError = e => V.error(e) || 'No pudimos completar la operación. Revis
 
 const subir = subirArchivo;
 
-// Iniciar sesión
 document.getElementById('form-login').addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target, btn = f.querySelector('button[type=submit]');
@@ -138,7 +127,6 @@ document.getElementById('form-login').addEventListener('submit', async e => {
   } catch (x) { aviso(f, x.message); btn.disabled = false; }
 });
 
-// Registro de donante
 document.getElementById('form-registro').addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target, btn = f.querySelector('button[type=submit]');
@@ -154,7 +142,7 @@ document.getElementById('form-registro').addEventListener('submit', async e => {
     });
     if (error) throw error;
     if (!data.session) throw new Error('Cuenta creada. Confirma tu correo y luego inicia sesión.');
-    try {                                 // la foto es opcional: si falla, la cuenta ya quedó creada
+    try {
       const ruta = await subir('publico', data.user.id, f.foto.files[0], 'perfil');
       if (ruta) await sb.from('donantes').update({ foto_ruta: ruta }).eq('usuario_id', data.user.id);
     } catch (_) { /* se puede agregar después desde el perfil */ }
@@ -162,7 +150,6 @@ document.getElementById('form-registro').addEventListener('submit', async e => {
   } catch (x) { aviso(f, textoError(x)); btn.disabled = false; }
 });
 
-// Registro de centro
 formCentro.addEventListener('submit', async e => {
   e.preventDefault();
   const v = id => document.getElementById(id).value.trim();
@@ -201,7 +188,6 @@ formCentro.addEventListener('submit', async e => {
   } catch (x) { aviso(formCentro, textoError(x)); btn.disabled = false; }
 });
 
-// Formulario de contacto
 document.getElementById('form-contacto').addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target, btn = f.querySelector('button[type=submit]');
@@ -217,7 +203,6 @@ document.getElementById('form-contacto').addEventListener('submit', async e => {
   f.reset(); aviso(f, '¡Mensaje enviado! Gracias por escribirnos.');
 });
 
-// Validaciones de los campos
 V.aplicar({
   '#form-login [name=correo]': V.correo(true, false), '#form-login [name=password]': V.passLogin(),
   '#form-registro [name=nombre]': V.persona(80), '#form-registro [name=apellido_paterno]': V.persona(80),
