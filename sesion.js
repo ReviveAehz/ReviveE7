@@ -1,8 +1,7 @@
-// Utilidades de sesión para las páginas privadas
 function irA(pagina, motivo) {
   console.warn('Redirigiendo a ' + pagina + (motivo ? ' (' + motivo + ')' : ''));
   location.replace(pagina);
-  setTimeout(() => {            // si el navegador no cambió de página, se avisa en pantalla
+  setTimeout(() => {
     document.body.style.visibility = 'visible';
     document.body.innerHTML = '<p style="padding:2rem;font:16px sans-serif">Redirigiendo… si no cambia, <a href="' + pagina + '">entra aquí</a>.</p>';
   }, 1500);
@@ -13,7 +12,6 @@ async function cerrarSesion() {
   irA('index.html', 'sesión cerrada');
 }
 
-// Muestra la página solo si hay sesión y el rol coincide; si no, redirige
 async function iniciarPagina(rolEsperado, alListo) {
   document.querySelectorAll('.lateral nav a[href="index.html"]').forEach(a =>
     a.addEventListener('click', e => { e.preventDefault(); cerrarSesion(); }));
@@ -27,7 +25,7 @@ async function iniciarPagina(rolEsperado, alListo) {
     const { data: perfil, error } = await sb.from('perfiles').select('rol').eq('id', user.id).single();
     clearTimeout(espera);
     if (error || !perfil) return irA('index.html', 'sin perfil');
-    if (perfil.rol !== rolEsperado) {     // cuenta de otro tipo: se manda a su propio panel
+    if (perfil.rol !== rolEsperado) {
       return irA(perfil.rol === 'centro' ? 'centro.html' : perfil.rol === 'donante' ? 'donante.html' : 'index.html', 'rol distinto');
     }
     document.body.style.visibility = 'visible';
