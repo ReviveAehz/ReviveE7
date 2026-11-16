@@ -1,14 +1,12 @@
 const V = (() => {
-  //fechas
   const local = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   const hoy = () => local(new Date());
   const mas = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n); return local(d); };
   const hace = anios => { const d = new Date(); d.setFullYear(d.getFullYear() - anios); return local(d); };
 
-  //limpieza
-  const lin = v => String(v == null ? '' : v).normalize('NFC').replace(/\s+/g, ' ').trim();                 // una línea
+  const lin = v => String(v == null ? '' : v).normalize('NFC').replace(/\s+/g, ' ').trim();
   const multi = v => String(v == null ? '' : v).normalize('NFC').replace(/\r/g, '').replace(/[ \t]+/g, ' ')
-    .replace(/ ?\n ?/g, '\n').replace(/\n{3,}/g, '\n\n').trim();                                            // varias líneas
+    .replace(/ ?\n ?/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
   const palabras = t => t.trim() ? t.trim().split(/\s+/).length : 0;
 
   const CTRL = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/;
@@ -22,7 +20,6 @@ const V = (() => {
     return (10 - (s % 10)) % 10 === Number(c[17]);
   };
 
-  //fábrica de regla
   const campo = (o, check) => ({
     max: o.max, ml: o.ml || o.max, norm: o.norm || (o.multi ? multi : lin),
     f(v) {
@@ -41,7 +38,7 @@ const V = (() => {
     const r = libre(max * 14, obl); const f0 = r.f;
     r.f = v => f0(v) || (palabras(v) > max ? 'Máximo ' + max + ' palabras.' : ''); return r;
   };
-  const DOMINIOS = ['gmail.com', 'hotmail.com'];              // correos permitidos: cambia aquí si piden otros dominios
+  const DOMINIOS = ['gmail.com', 'hotmail.com'];
   const dominioOk = v => DOMINIOS.includes(v.slice(v.lastIndexOf('@') + 1));
   const correo = (obl = true, restringir = true) => {
     const r = campo({ max: 150, obl, norm: v => lin(v).toLowerCase() }, v =>
@@ -87,11 +84,10 @@ const V = (() => {
   }, { fecha: true, min, max });
   const selector = () => num(v => v === '' ? 'Elige una opción.' : '');
 
-  //conexión con los campos
   const aplicar = mapa => {
     const formas = new Set();
     Object.entries(mapa).forEach(([id, r]) => {
-      const el = /[#\[.\s]/.test(id) ? document.querySelector(id) : document.getElementById(id);   // por id, o por selector (#form [name=x])
+      const el = /[#\[.\s]/.test(id) ? document.querySelector(id) : document.getElementById(id);
       if (!el) { console.warn('validar.js: no existe ' + id); return; }
       const texto = el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && !['date', 'number', 'file', 'checkbox', 'radio'].includes(el.type));
       if (texto && r.ml) el.maxLength = r.ml;
@@ -121,7 +117,6 @@ const V = (() => {
     });
   };
 
-  //archivos
   const IMG = ['image/jpeg', 'image/png', 'image/webp'], DOC = IMG.concat('application/pdf');
   const firma = async f => {
     const b = new Uint8Array(await f.slice(0, 12).arrayBuffer());
@@ -149,7 +144,6 @@ const V = (() => {
     });
   });
 
-  //errores en lenguaje claro
   const fallo = t => Object.assign(new Error(t), { code: 'USR' });
   const error = x => {
     const m = (x && x.message) || '';
