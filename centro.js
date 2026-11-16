@@ -1,4 +1,3 @@
-// Utilidades
 const $ = id => document.getElementById(id);
 const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; };
 const pesos = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n);
@@ -17,13 +16,11 @@ const fallo = (x, msg) => { console.error(x); alert(msg + (V.error(x) ? ' ' + V.
 const nombreArt = a => !a ? 'Artículo' : (a.tipos_articulo && a.tipos_articulo.nombre === 'Otro (escribir)' ? (a.detalle || 'Otro') : (a.tipos_articulo ? a.tipos_articulo.nombre : 'Artículo'));
 const nombreDe = d => d ? (d.nombre + ' ' + (d.apellido_paterno || '')).trim() : 'Donante';
 
-// Datos
 let uid = null;
 const centro = { nombre: '', tipo: '', ubic: '', horario: '', desc: '', verificado: false, contactos: {}, imagenes: [], urgentes: [], cuenta: null };
 let bandeja = [], donDe = {}, donNombre = {}, dineros = [], enviados = [];
 let imgsEdit = [], fotosMo = [];
 
-// Ventanas y pestañas
 document.querySelectorAll('[data-dlg]').forEach(b => b.onclick = () => $(b.dataset.dlg).showModal());
 document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d || e.target.hasAttribute('data-cerrar')) d.close(); }));
 const tabs = document.querySelectorAll('[data-tab]');
@@ -32,7 +29,6 @@ tabs.forEach(t => t.onclick = () => {
   document.querySelectorAll('.panel').forEach(p => p.hidden = p.id !== t.dataset.tab);
 });
 
-// Contadores de palabras
 function contar(taId, cId, max) {
   const ta = $(taId), n = palabras(ta.value), c = $(cId);
   c.textContent = n + ' / ' + max + ' palabras'; c.classList.toggle('excede', n > max);
@@ -41,7 +37,6 @@ function contar(taId, cId, max) {
 $('e-desc').oninput = () => contar('e-desc', 'e-dcuenta', 500);
 $('mo-desc').oninput = () => contar('mo-desc', 'mo-cuenta', 150);
 
-// Imágenes con límite
 function pintarMinis(cont, arr, refrescar) {
   cont.replaceChildren();
   arr.forEach((u, i) => {
@@ -66,7 +61,6 @@ const refFotosMo = () => { pintarMinis($('mo-prev'), fotosMo, refFotosMo); $('mo
 $('e-imgs').onchange = () => agregar($('e-imgs'), imgsEdit, 10, refImgsEdit);
 $('mo-fotos').onchange = () => agregar($('mo-fotos'), fotosMo, 5, refFotosMo);
 
-// Carga de datos
 async function cargarCentro() {
   const [c, ct, im, ins, cb] = await Promise.all([
     sb.from('centros').select('nombre, ubicacion, horario, descripcion, verificacion, tipos_centro(nombre)').eq('usuario_id', uid).single(),
@@ -121,7 +115,6 @@ async function cargarImpacto() {
 }
 async function recargarOperacion() { await Promise.all([cargarBandeja(), cargarDinero()]); render(); }
 
-// Bandeja
 async function cambiarEstado(art, nuevo, d) {
   const { error } = await sb.from('donacion_articulos').update({ estado: A_DB[nuevo] }).eq('articulo_id', art.id);
   if (error) return fallo(error, 'No se pudo cambiar el estado.');
@@ -160,7 +153,6 @@ function pintarUsuario(d) {
 }
 $('ban-buscar').oninput = () => render();
 
-// Transferencias
 async function resolverDinero(d, estado) {
   const { error } = await sb.from('transferencias').update({ estado, revisado_en: new Date().toISOString() }).eq('id', d.id);
   if (error) return fallo(error, 'No se pudo actualizar la transferencia.');
@@ -174,7 +166,6 @@ async function verComprobante(ruta) {
   if (w) w.location.href = data.signedUrl;
 }
 
-// Motivar a usuarios 
 function donacionesEntregadas(donanteId) {
   return (donDe[donanteId] || []).filter(x => x.arts.some(a => a.estado === 'Entregado'));
 }
@@ -212,7 +203,6 @@ $('f-motivar').onsubmit = async e => {
   finally { btn.disabled = false; }
 };
 
-// Editar datos del establecimiento
 function validarContactos() {
   const n = Object.values(idsContacto).filter(id => $(id).value.trim()).length;
   $('e-ccuenta').textContent = '(mínimo 2 · llevas ' + n + ')';
@@ -236,16 +226,16 @@ $('f-editar').onsubmit = async e => {
   try {
     const banco = $('e-banco').value.trim(), titular = $('e-titular').value.trim(), clabe = $('e-clabe').value.trim();
     if ((banco || titular || clabe) && !(banco && titular && clabe)) throw new Error('Para recibir transferencias llena banco, titular y CLABE, o deja los tres vacíos.');
-    // 1. datos generales
+
     const tipo = ok(await sb.from('tipos_centro').select('id').eq('nombre', $('e-tipo').value).single());
     ok(await sb.from('centros').update({ nombre: $('e-nombre').value.trim(), tipo_id: tipo.data.id, ubicacion: $('e-ubic').value.trim(),
       horario: $('e-horario').value.trim(), descripcion: $('e-desc').value.trim() || null }).eq('usuario_id', uid));
-    // 2. contactos
+
     const llenos = [], vacios = [];
     Object.entries(idsContacto).forEach(([k, id]) => { const v = $(id).value.trim(); if (v) llenos.push({ centro_id: uid, tipo: k, valor: v }); else vacios.push(k); });
     if (llenos.length) ok(await sb.from('centro_contactos').upsert(llenos, { onConflict: 'centro_id,tipo' }));
     if (vacios.length) ok(await sb.from('centro_contactos').delete().eq('centro_id', uid).in('tipo', vacios));
-    // 3. imágenes
+
     const quedan = imgsEdit.filter(x => x.id).map(x => x.id), quitar = centro.imagenes.filter(x => !quedan.includes(x.id));
     if (quitar.length) {
       ok(await sb.from('centro_imagenes').delete().in('id', quitar.map(x => x.id)));
@@ -255,18 +245,17 @@ $('f-editar').onsubmit = async e => {
       const ruta = await subirArchivo('publico', uid, n.file, 'imagen');
       ok(await sb.from('centro_imagenes').insert({ centro_id: uid, ruta }));
     }
-    // 4. insumos urgentes
+
     const lineas = [...new Set($('e-urg').value.split('\n').map(s => s.trim().slice(0, 100)).filter(Boolean))];
     ok(await sb.from('insumos_urgentes').delete().eq('centro_id', uid));
     if (lineas.length) ok(await sb.from('insumos_urgentes').insert(lineas.map(nombre => ({ centro_id: uid, nombre }))));
-    // 5. cuenta bancaria
+
     if (banco) ok(await sb.from('cuentas_bancarias').upsert({ centro_id: uid, banco, titular, clabe }, { onConflict: 'centro_id' }));
     $('d-editar').close(); await cargarCentro(); cargarForm(); render(); gracias('Datos actualizados ✓');
   } catch (x) { fallo(x, 'No se pudieron guardar los cambios.'); await cargarCentro().catch(() => {}); render(); }
   finally { btn.disabled = false; }
 };
 
-// Dibujar todo
 function render() {
   const ini = centro.nombre.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'CA';
   $('c-ini').textContent = ini; $('c-nombre-lat').textContent = centro.nombre || 'Centro'; $('c-nombre').textContent = centro.nombre || 'Centro';
@@ -323,7 +312,6 @@ function render() {
   $('v-imgs-vacio').hidden = centro.imagenes.length > 0;
 }
 
-// Arranque: sesión real
 iniciarPagina('centro', async user => {
   uid = user.id;
   try { await Promise.all([cargarCentro(), cargarBandeja(), cargarDinero(), cargarImpacto()]); }
@@ -331,7 +319,6 @@ iniciarPagina('centro', async user => {
   cargarForm(); refFotosMo(); render();
 });
 
-// Validaciones de los campos
 V.aplicar({
   'e-nombre': V.lugar(120), 'e-ubic': V.lugar(255), 'e-horario': V.lugar(150), 'e-tipo': V.selector(),
   'e-tel': V.telefono(false), 'e-correo': V.correo(false), 'e-fb': V.red(), 'e-ig': V.red(), 'e-tk': V.red(), 'e-x': V.red(), 'e-web': V.web(),
