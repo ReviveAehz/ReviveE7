@@ -1,7 +1,6 @@
 const $ = id => document.getElementById(id);
 const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; };
 
-// Menú móvil
 const menuBtn = document.querySelector('.menu-btn'), menu = $('menu');
 menuBtn.addEventListener('click', () => { menuBtn.setAttribute('aria-expanded', menu.classList.toggle('abierto')); });
 
