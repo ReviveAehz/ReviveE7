@@ -37,16 +37,6 @@ document.querySelectorAll('[data-abrir-registro-centro]').forEach(b => b.addEven
 
 const calma = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const rota = document.getElementById('rota');
-const palabrasRota = ['ropa', 'alimentos', 'juguetes', 'útiles escolares', 'pañales', 'calzado', 'cobijas'];
-if (!calma) {
-  let k = 0;
-  setInterval(() => {
-    rota.classList.add('sale');
-    setTimeout(() => { k = (k + 1) % palabrasRota.length; rota.textContent = palabrasRota[k]; rota.classList.remove('sale'); }, 300);
-  }, 2400);
-}
-
 const categorias = {
   'Ropa': { ej: ['Camisetas', 'Pantalones', 'Sudaderas', 'Abrigos', 'Pijamas', 'Calcetines', 'Ropa interior nueva'], tip: 'Limpia y en buen estado. La ropa interior, solo nueva.' },
   'Calzado': { ej: ['Zapatillas', 'Botas', 'Sandalias', 'Zapatos escolares', 'Calzado infantil'], tip: 'Que estén completos (el par) y sin suelas rotas.' },
