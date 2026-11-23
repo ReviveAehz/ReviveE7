@@ -197,7 +197,7 @@ V.aplicar({
   '#form-login [name=correo]': V.correo(true, false), '#form-login [name=password]': V.passLogin(),
   '#form-registro [name=nombre]': V.persona(80), '#form-registro [name=apellido_paterno]': V.persona(80),
   '#form-registro [name=apellido_materno]': V.persona(80),
-  '#form-registro [name=fecha_nacimiento]': V.fecha('1900-01-01', () => V.hace(13)),
+  '#form-registro [name=fecha_nacimiento]': V.fecha('1900-01-01', () => V.hace(18)),
   '#form-registro [name=ubicacion]': V.lugar(150), '#form-registro [name=telefono]': V.telefono(false),
   '#form-registro [name=correo]': V.correo(), '#form-registro [name=password]': V.password(),
   'rc-nombre': V.lugar(120), 'rc-tipo': V.selector(), 'rc-horario': V.lugar(150), 'rc-ubic': V.lugar(255),

@@ -4,6 +4,7 @@ const pesos = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency:
 const fmt = d => new Date(d + 'T00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'long' });
 const palabras = t => t.trim() ? t.trim().split(/\s+/).length : 0;
 const anio = new Date().getFullYear();
+const sinAcentos = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const ESTADOS = ['Pendiente', 'Listo para entregar', 'Entregado'];
 const A_DB = { 'Pendiente': 'pendiente', 'Listo para entregar': 'listo_para_entregar', 'Entregado': 'entregado' };
 const DE_DB = { pendiente: 'Pendiente', listo_para_entregar: 'Listo para entregar', entregado: 'Entregado' };
@@ -50,7 +51,7 @@ async function agregar(input, arr, max, refrescar) {
   const libre = max - arr.length, files = [...input.files]; input.value = '';
   if (files.length > libre) gracias('Máximo ' + max + ' imágenes. Se agregaron ' + libre + '.');
   for (const f of files.slice(0, libre)) {
-    const m = await V.archivo(f, V.IMG, 15);
+    const m = await V.archivo(f, V.IMG, 5);
     if (m) { alert(f.name + ': ' + m); continue; }
     arr.push({ file: f, url: URL.createObjectURL(f) });
   }
@@ -116,7 +117,10 @@ async function cargarImpacto() {
 async function recargarOperacion() { await Promise.all([cargarBandeja(), cargarDinero()]); render(); }
 
 async function cambiarEstado(art, nuevo, d) {
-  const { error } = await sb.from('donacion_articulos').update({ estado: A_DB[nuevo] }).eq('articulo_id', art.id);
+  const dif = ESTADOS.indexOf(nuevo) - ESTADOS.indexOf(art.estado);
+  if (dif !== 1) { alert('Cambio de estado no permitido. El orden es Pendiente, Listo para entregar y Entregado, un paso a la vez.'); pintarUsuario(d); return; }
+  if (nuevo === 'Entregado' && !confirm('¿Confirmar que recibiste "' + art.nom + '"? Ya no se podrá cambiar.')) { pintarUsuario(d); return; }
+  const { error } = sb.from('donacion_articulos').update({ estado: A_DB[nuevo] }).eq('articulo_id', art.id);
   if (error) return fallo(error, 'No se pudo cambiar el estado.');
   await cargarBandeja(); render(); pintarUsuario(d);
   if (nuevo === 'Entregado') gracias('Entrega confirmada ✓');
@@ -140,7 +144,10 @@ function pintarUsuario(d) {
   $('usr-confirmar').onclick = async () => {
     const ids = dons.map(x => x.id);
     if (!ids.length || !dons.some(x => x.arts.some(a => a.estado !== 'Entregado'))) { gracias('No hay donaciones por confirmar'); return; }
-    const { error } = await sb.from('donacion_articulos').update({ estado: 'entregado' }).in('donacion_id', ids).neq('estado', 'entregado');
+    if (!confirm('¿Confirmar que recibiste todo lo de ' + d.nombre + '? Los artículos pasarán a Entregado y ya no se podrá cambiar.')) return;
+    const paso1 = await sb.from('donacion_articulos').update({ estado: 'listo_para_entregar' }).in('donacion_id', ids).eq('estado', 'pendiente');
+    if (paso1.error) return fallo(paso1.error, 'No se pudo confirmar.');
+    const { error } = await sb.from('donacion_articulos').update({ estado: 'entregado' }).in('donacion_id', ids).eq('estado', 'listo_para_entregar');
     if (error) return fallo(error, 'No se pudo confirmar.');
     await cargarBandeja(); render(); pintarUsuario(d); gracias('Donación confirmada ✓');
   };
@@ -261,12 +268,12 @@ function render() {
   $('c-ini').textContent = ini; $('c-nombre-lat').textContent = centro.nombre || 'Centro'; $('c-nombre').textContent = centro.nombre || 'Centro';
   $('aviso-verif').hidden = centro.verificado;
 
-  $('s-art').textContent = Object.values(donDe).flat().reduce((t, d) => t + d.arts.filter(a => a.estado !== 'Entregado').length, 0);
+  $('s-art').textContent = bandeja.flatMap(b => donDe[b.id] || []).reduce((t, d) => t + d.arts.filter(a => a.estado !== 'Entregado').length, 0);
   $('s-din').textContent = dineros.filter(d => d.estado === 'Por confirmar').length;
   $('s-don').textContent = bandeja.length;
 
-  const q = $('ban-buscar').value.trim().toLowerCase(), bl = $('ban-lista'); bl.replaceChildren();
-  const vis = bandeja.filter(d => d.nombre.toLowerCase().includes(q));
+  const q = sinAcentos($('ban-buscar').value.trim()), bl = $('ban-lista'); bl.replaceChildren();
+  const vis = bandeja.filter(d => sinAcentos(d.nombre).includes(q));
   vis.forEach(d => {
     const t = el('article', 'tarjeta');
     t.append(el('h3', '', d.nombre), el('p', 'meta', d.correo), el('p', '', d.donaciones + ' donación(es) · ' + d.pendientes + ' por confirmar'));
@@ -322,7 +329,7 @@ iniciarPagina('centro', async user => {
 V.aplicar({
   'e-nombre': V.lugar(120), 'e-ubic': V.lugar(255), 'e-horario': V.lugar(150), 'e-tipo': V.selector(),
   'e-tel': V.telefono(false), 'e-correo': V.correo(false), 'e-fb': V.red(), 'e-ig': V.red(), 'e-tk': V.red(), 'e-x': V.red(), 'e-web': V.web(),
-  'e-desc': V.palabrasMax(500, false), 'e-urg': V.lineas(20, 100),
+  'e-desc': V.palabrasMax(500, false), 'e-urg': V.lineas(10, 100),
   'e-banco': V.lugar(60, false), 'e-titular': V.lugar(120, false), 'e-clabe': V.clabe(false),
   'mo-desc': V.palabrasMax(150)
 });

@@ -12,6 +12,7 @@
 </head>
 <body class="app">
 
+  <!-- ============ BARRA LATERAL IZQUIERDA ============ -->
   <aside class="lateral">
     <a href="donante.html" class="logo-lat">Revive</a>
     <div class="usuario">
@@ -26,10 +27,12 @@
     </nav>
   </aside>
 
+  <!-- ============ PÁGINA PRINCIPAL ============ -->
   <main class="principal">
     <h1>Hola, <span id="h-nombre">Donante</span></h1>
     <p class="relleno">Gracias por ser parte de Revive. Cada artículo que donas puede tener una segunda vida y llegar a quien más lo necesita.</p>
 
+    <!-- Resumen de impacto personal -->
     <div class="resumen">
       <div class="tarjeta stat"><strong id="s-don">0</strong>artículos donados este año</div>
       <div class="tarjeta stat"><strong id="s-pen">0</strong>artículos por entregar</div>
@@ -46,6 +49,7 @@
       <button role="tab" data-tab="p-anual">Donaciones anuales</button>
     </div>
 
+    <!-- Inventario -->
     <div class="panel" id="p-inv">
       <div class="panel-cab">
         <h2>Inventario</h2>
@@ -59,6 +63,7 @@
       <div class="modulos" id="inv-lista"></div>
     </div>
 
+    <!-- Tus donaciones -->
     <div class="panel" id="p-don" hidden>
       <h2>Tus donaciones</h2>
       <p class="relleno">El centro de acopio es quien confirma cuándo recibe tus artículos o tu transferencia.</p>
@@ -80,11 +85,13 @@
       <div class="grid g2" id="imp-lista"></div>
     </div>
 
+    <!-- Centro de acopio -->
     <div class="panel" id="p-centro" hidden>
       <h2>Centros de acopio</h2>
       <div class="grid g2" id="centros-lista"></div>
     </div>
 
+    <!-- Rachas y logros -->
     <div class="panel" id="p-rach" hidden>
       <h2>Rachas y logros</h2>
       <div class="tarjeta racha">
@@ -96,6 +103,7 @@
       <div class="logros" id="logros"></div>
     </div>
 
+    <!-- Tabla anual -->
     <div class="panel" id="p-anual" hidden>
       <h2>Tabla de donaciones anuales <span id="anio"></span></h2>
       <div class="tabla-wrap">
@@ -106,6 +114,7 @@
 
   <p class="gracias" id="gracias" role="status" hidden>¡Gracias por donar! 💙</p>
 
+  <!-- ============ VENTANAS ============ -->
   <dialog id="d-art" class="ancho">
     <div class="modal-cab"><h3 id="t-art">Agregar artículo</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
     <form class="modal-cuerpo form-grid" id="f-art">
@@ -167,6 +176,7 @@
   <div class="modal-cab"><h3 id="t-perfil">Mi perfil</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
   <div class="modal-cuerpo">
 
+    <!-- Foto -->
     <div class="pf-cab">
       <div class="pf-foto" id="pf-foto" role="img" aria-label="Foto de perfil">DN</div>
       <div class="pf-acc">
@@ -177,6 +187,7 @@
       </div>
     </div>
 
+    <!-- Datos personales -->
     <form id="f-perfil" class="form-grid">
       <div class="campo"><label for="p-nombre">Nombre(s)</label><input id="p-nombre" required></div>
       <div class="campo"><label for="p-ap">Apellido paterno</label><input id="p-ap" required></div>
@@ -195,6 +206,7 @@
       </div>
     </form>
 
+    <!-- Cambiar contraseña -->
     <details class="pf-sec">
       <summary>Cambiar contraseña</summary>
       <form id="f-pass" class="form-grid">
@@ -205,6 +217,7 @@
       </form>
     </details>
 
+    <!-- Eliminar cuenta -->
     <div class="pf-peligro">
       <h4>Eliminar cuenta</h4>
       <p>Se borrarán tu perfil, tu inventario y tu historial de donaciones. Esta acción no se puede deshacer.</p>
@@ -226,6 +239,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="validar.js"></script>
+  <script src="horario.js"></script>
   <script src="sesion.js"></script>
   <script src="donante.js"></script>
 

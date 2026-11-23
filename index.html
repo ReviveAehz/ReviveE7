@@ -354,7 +354,7 @@
         </div>
 
         <form class="tarjeta" id="form-contacto">
-          <div class="campo"><label for="c-nombre">Nombre</label><input id="c-nombre" name="nombre" type="text" autocomplete="name" required></div>
+          <div class="campo"><label for="c-nombre">Nombre</label><input id="c-nombre" name="nombre" type="text" autocomplete="name" maxlength="100" required></div>
           <div class="campo"><label for="c-correo">Correo electrónico</label><input id="c-correo" name="correo" type="email" autocomplete="email" required></div>
           <div class="campo">
             <label for="c-asunto">Asunto</label>
@@ -365,7 +365,7 @@
               <option>Otro</option>
             </select>
           </div>
-          <div class="campo"><label for="c-mensaje">Mensaje</label><textarea id="c-mensaje" name="mensaje" required></textarea></div>
+          <div class="campo"><label for="c-mensaje">Mensaje</label><textarea id="c-mensaje" name="mensaje" minlength="10" maxlength="1000" required></textarea></div>
           <button class="btn" type="submit">Enviar mensaje</button>
         </form>
       </div>
@@ -463,7 +463,7 @@
             <option>Asociación civil</option><option>Iglesia o parroquia</option><option>Otro</option>
           </select>
         </div>
-        <div class="campo"><label for="rc-horario">Horario de recepción</label><input id="rc-horario" name="horario" placeholder="Ej. Lunes a viernes, 9:00 a 17:00" required></div>
+        <div class="campo completo"><label id="rc-horario-l">Horario de recepción</label><input id="rc-horario" name="horario" type="hidden" data-horario></div>
         <div class="campo completo"><label for="rc-ubic">Ubicación</label><input id="rc-ubic" name="ubicacion" placeholder="Calle, número, colonia, ciudad, estado" autocomplete="street-address" required></div>
         <div class="campo completo"><label for="rc-desc">Descripción breve (opcional)</label><textarea id="rc-desc" name="descripcion" style="min-height:80px" placeholder="¿A quién atiende tu centro?"></textarea></div>
         <div class="campo completo"><label for="rc-logo">Logo o foto del establecimiento (opcional)</label><input id="rc-logo" name="logo" type="file" accept="image/*"></div>
@@ -510,6 +510,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="validar.js"></script>
+  <script src="horario.js"></script>
   <script src="index.js"></script>
 
 </body>

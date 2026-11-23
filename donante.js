@@ -14,6 +14,7 @@ const catalogo = {
 };
 const OTRO = 'Otro (escribir)';
 const cats = Object.keys(catalogo);
+const sinAcentos = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 const centros = [];
@@ -41,6 +42,7 @@ function ajustar() {
   $('w-otro').hidden = $('a-tipo').value !== OTRO;
   $('a-otro').required = !$('w-otro').hidden;
   $('w-cad').hidden = $('a-cat').value !== 'Alimentos';
+  $('a-cad').required = !$('w-cad').hidden;               // la caducidad es obligatoria solo para alimentos
 }
 cats.forEach(c => $('a-cat').append(new Option(c)));
 llenarTipos(cats[0]); ajustar();
@@ -106,9 +108,29 @@ async function eliminar(i) {
 }
 
 centros.forEach(c => $('d-centro').append(new Option(c.nombre, c.id)));
+function llenarHoras() {
+  const sel = $('d-hora'), c = centros.find(x => x.id === $('d-centro').value), f = $('d-fecha').value;
+  let aviso = $('d-hora-aviso');
+  if (!aviso) { aviso = el('small', 'ayuda'); aviso.id = 'd-hora-aviso'; aviso.setAttribute('role', 'status'); sel.after(aviso); }
+  const h = c ? Horario.parse(c.horario) : null, previa = sel.value;
+  sel.required = true; sel.replaceChildren(); aviso.textContent = '';
+  if (f && h && !h.dias.includes((new Date(f + 'T12:00').getDay() + 6) % 7)) {
+    aviso.textContent = 'Ese centro no recibe donaciones ese día. Horario: ' + c.horario + '.'; return;
+  }
+  const ini = h ? h.ini : '08:00', fin = h ? h.fin : '20:00';        // centros anteriores al selector de horario: 08:00 a 20:00
+  const ahora = new Date(), limite = f === V.hoy() ? ahora.getHours() * 60 + ahora.getMinutes() + 60 : -1;   // hoy: mínimo 1 hora después de la actual
+  for (let m = Horario.minutos(ini); m < Horario.minutos(fin); m += 30) {
+    if (m < limite) continue;
+    const t = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+    sel.append(new Option(t, t));
+  }
+  if ([...sel.options].some(o => o.value === previa)) sel.value = previa;
+  if (!sel.options.length) aviso.textContent = f === V.hoy() ? 'Ya no hay horas disponibles hoy en este centro. Elige otro día.' : 'Este centro no tiene horas disponibles.';
+}
 function infoCentro() {
   const c = centros.find(x => x.id === $('d-centro').value);
   $('d-info').textContent = c ? 'Horario: ' + c.horario + ' · ' + c.dir : '';
+  llenarHoras();
 }
 $('d-centro').onchange = infoCentro;
 function abrirDonar(cid) {
@@ -125,11 +147,15 @@ function abrirDonar(cid) {
   infoCentro(); $('d-donar').showModal();
 }
 $('b-donar').onclick = () => abrirDonar();
-$('d-fecha').min = new Date().toISOString().slice(0, 10);
+$('d-fecha').min = V.hoy();
+['change', 'input'].forEach(ev => $('d-fecha').addEventListener(ev, llenarHoras));
 $('f-donar').onsubmit = async e => {
   e.preventDefault();
   const sel = [...$('donar-lista').querySelectorAll('input:checked')].map(c => items[c.value]);
   if (!sel.length) { alert('Selecciona al menos un artículo.'); return; }
+  const hh = $('d-hora').value, aviso = document.getElementById('d-hora-aviso');
+  if (!hh) { alert((aviso && aviso.textContent) || 'Elige una hora de entrega.'); return; }
+  if (new Date($('d-fecha').value + 'T' + hh) < new Date(Date.now() + 3600000)) { alert('La entrega debe programarse con al menos 1 hora de anticipación.'); return; }
   const btn = $('donar-ok'); btn.disabled = true;
   try {
     const c = centros.find(x => x.id === $('d-centro').value);
@@ -216,12 +242,13 @@ function render() {
   const activos = items.filter(i => i.estado !== 'Entregado');
   const listos = activos.filter(i => i.estado === 'Listo para entregar');
 
-  const q = $('buscar').value.trim().toLowerCase(), cont = $('inv-lista');
+  const q = sinAcentos($('buscar').value.trim()), cont = $('inv-lista');
   cont.replaceChildren();
   cats.forEach(c => {
-    const f = activos.filter(i => i.cat === c && (i.nom + ' ' + i.cat).toLowerCase().includes(q));
+    const f = activos.filter(i => i.cat === c && sinAcentos(i.nom + ' ' + i.cat).includes(q));
     if (!f.length) return;
-    const m = el('article', 'tarjeta modulo'); m.append(el('h3', '', c));
+    const m = el('article', 'tarjeta modulo'), total = activos.filter(i => i.cat === c).reduce((t, i) => t + Number(i.cant), 0);
+    m.append(el('h3', '', c + ' · Total: ' + total + (total === 1 ? ' artículo' : ' artículos')));
     f.forEach(i => {
       const r = el('div', 'art'), n = el('span', 'art-nom', i.nom + ' × ' + i.cant);
       const sm = el('small', '', i.ent ? 'Entrega en ' + i.ent.centro.nombre + ' · ' + fmt(i.ent.fecha) : 'Aún sin donar');
@@ -630,21 +657,22 @@ $('f-pass').onsubmit = async e => {
 };
 
 $('pf-eliminar').onclick = async () => {
+  if (entregas.some(en => en.items.some(i => i.estado !== 'Entregado'))) { alert('Cancela tus entregas pendientes antes de eliminar tu cuenta.'); return; }
   if (!confirm('¿Seguro que quieres eliminar tu cuenta? Se borrarán tu perfil, tu inventario y tus donaciones. No se puede deshacer.')) return;
   const { data: archivos } = await sb.storage.from('publico').list(usuarioId);
   if (archivos && archivos.length) await sb.storage.from('publico').remove(archivos.map(f => usuarioId + '/' + f.name));
   const { error } = await sb.rpc('eliminar_mi_cuenta');
-  if (error) { console.error(error); return alert('No se pudo eliminar la cuenta. Intenta de nuevo.'); }
+  if (error) { console.error(error); return alert('No se pudo eliminar la cuenta. ' + V.error(error)); }
   await sb.auth.signOut(); location.replace('index.html');
 };
 
 V.aplicar({
-  'a-otro': V.lugar(100, false), 'a-cant': V.entero(1, 9999), 'a-cad': V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 3650), false),
+  'a-otro': V.lugar(100, false), 'a-cant': V.entero(1, 9999), 'a-cad': (() => { const r = V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 3650), false); return { ...r, f: v => $('w-cad').hidden ? '' : v === '' ? 'La fecha de caducidad es obligatoria para los alimentos.' : r.f(v) }; })(),
   'a-nota': V.libre(255, false, false),
   'd-fecha': V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 365)), 'd-nota': V.libre(255, false, false),
   'm-monto': V.monto(), 'm-fecha': V.fecha(() => V.mas(V.hoy(), -365), () => V.hoy()), 'm-rastreo': V.rastreo(),
   'p-nombre': V.persona(80), 'p-ap': V.persona(80), 'p-am': V.persona(80),
-  'p-fecha': V.fecha('1900-01-01', () => V.hace(13)), 'p-ubic': V.lugar(150), 'p-tel': V.telefono(false),
+  'p-fecha': V.fecha('1900-01-01', () => V.hace(18)), 'p-ubic': V.lugar(150), 'p-tel': V.telefono(false),
   'pw-act': V.passLogin(), 'pw-new': V.password(), 'r-t': V.libre(2000), 'e-t': V.libre(2000)
 });
 V.archivos({ 'm-comp': { tipos: V.DOC }, 'pf-archivo': { tipos: V.IMG } });
