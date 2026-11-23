@@ -13,7 +13,7 @@ let centros = [];
 let cargado = false;
 
 function render() {
-  const q = sinAcentos($('f-buscar').value.trim()), tipo = $('f-tipo').value, l = $('lista');
+  const q0 = sinAcentos($('f-buscar').value.trim()), corto = q0.length === 1, q = corto ? '' : q0, tipo = $('f-tipo').value, l = $('lista');
   l.replaceChildren();
   const vis = centros.filter(c => (!tipo || c.tipo === tipo) &&
     sinAcentos(c.nombre + ' ' + c.ubic + ' ' + c.urgentes.join(' ')).includes(q));
@@ -40,7 +40,7 @@ function render() {
   if (!cargado) return;
   $('f-vacio').textContent = centros.length ? 'No encontramos centros con esa búsqueda.' : 'Todavía no hay centros aprobados.';
   $('f-vacio').hidden = vis.length > 0;
-  $('f-cuenta').textContent = vis.length + ' centro(s) encontrado(s)';
+  $('f-cuenta').textContent = corto ? 'Escribe al menos 2 caracteres para buscar.' : vis.length + ' centro(s) encontrado(s)';
 }
 $('f-buscar').oninput = render;
 $('f-tipo').onchange = render;

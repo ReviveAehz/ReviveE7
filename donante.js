@@ -399,7 +399,7 @@ function pintarImpacto() {
     g.disabled = r.gracias;
     g.onclick = () => { r.gracias = true; pintarImpacto(); gracias('Le avisamos al centro 💙'); };
     const x = el('button', 'btn claro', 'Reportar foto');
-    x.onclick = () => { if (confirm('¿Reportar esta publicación como inapropiada? Dejará de mostrarse.')) { r.oculto = true; pintarImpacto(); gracias('Gracias por avisarnos'); } };
+    x.onclick = () => { if (confirm('¿Reportar esta publicación como inapropiada? Dejará de mostrarse.')) { r.oculto = true; pintarImpacto(); gracias('Foto reportada'); } };
     b.append(g, x); a.append(b); l.append(a);
   });
   $('imp-vacio').hidden = visibles.length > 0;
@@ -581,7 +581,7 @@ async function reportarFoto(r) {
   if (d.error && d.error.code !== '23505') { console.error(d.error); return alert('No se pudo enviar el reporte.'); }
   const { error } = await sb.from('reportes_impacto').update({ oculto: true }).eq('id', r.id);
   if (error) { console.error(error); return alert('No se pudo ocultar la publicación.'); }
-  reportes.splice(reportes.indexOf(r), 1); pintarImpacto(); gracias('Gracias por avisarnos');
+  reportes.splice(reportes.indexOf(r), 1); pintarImpacto(); gracias('Foto reportada');
 }
 function pintarImpacto() {
   const l = $('imp-lista'); l.replaceChildren();
@@ -667,7 +667,7 @@ $('pf-eliminar').onclick = async () => {
 };
 
 V.aplicar({
-  'a-otro': V.lugar(100, false), 'a-cant': V.entero(1, 999), 'a-cad': (() => { const r = V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 3650), false); return { ...r, f: v => $('w-cad').hidden ? '' : v === '' ? 'La fecha de caducidad es obligatoria para los alimentos.' : r.f(v) }; })(),
+  'a-otro': V.lugar(100, false), 'a-cant': V.entero(1, 999), 'a-cad': (() => { const r = V.fecha(() => V.mas(V.hoy(), 1), () => V.mas(V.hoy(), 3650), false); return { ...r, f: v => $('w-cad').hidden ? '' : v === '' ? 'La fecha de caducidad es obligatoria para los alimentos.' : /^\d{4}-\d{2}-\d{2}$/.test(v) && v <= V.hoy() ? 'La fecha de caducidad debe ser posterior a hoy.' : r.f(v) }; })(),
   'a-nota': V.libre(255, false, false),
   'd-fecha': V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 30)), 'd-nota': V.libre(255, false, false),
   'm-monto': V.monto(), 'm-fecha': V.fecha(() => V.mas(V.hoy(), -365), () => V.hoy()), 'm-rastreo': V.rastreo(),
