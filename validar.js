@@ -82,7 +82,7 @@ const V = (() => {
   const monto = () => num(v => {
     if (v === '') return 'Este campo es obligatorio.';
     if (!/^\d+(\.\d{1,2})?$/.test(v)) return 'Escribe un monto válido, con máximo 2 decimales.';
-    return Number(v) <= 0 ? 'El monto debe ser mayor que 0.' : Number(v) > 1000000 ? 'El monto máximo es $1,000,000.' : '';
+    return Number(v) <= 0 ? 'El monto debe ser mayor que 0.' : Number(v) > 100000 ? 'El monto máximo es $100,000.' : '';
   }, { numero: true, decimal: true });
   const fecha = (min, max, obl = true) => num(v => {
     if (v === '') return obl ? 'Escribe una fecha.' : '';

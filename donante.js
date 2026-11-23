@@ -667,9 +667,9 @@ $('pf-eliminar').onclick = async () => {
 };
 
 V.aplicar({
-  'a-otro': V.lugar(100, false), 'a-cant': V.entero(1, 9999), 'a-cad': (() => { const r = V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 3650), false); return { ...r, f: v => $('w-cad').hidden ? '' : v === '' ? 'La fecha de caducidad es obligatoria para los alimentos.' : r.f(v) }; })(),
+  'a-otro': V.lugar(100, false), 'a-cant': V.entero(1, 999), 'a-cad': (() => { const r = V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 3650), false); return { ...r, f: v => $('w-cad').hidden ? '' : v === '' ? 'La fecha de caducidad es obligatoria para los alimentos.' : r.f(v) }; })(),
   'a-nota': V.libre(255, false, false),
-  'd-fecha': V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 365)), 'd-nota': V.libre(255, false, false),
+  'd-fecha': V.fecha(() => V.hoy(), () => V.mas(V.hoy(), 30)), 'd-nota': V.libre(255, false, false),
   'm-monto': V.monto(), 'm-fecha': V.fecha(() => V.mas(V.hoy(), -365), () => V.hoy()), 'm-rastreo': V.rastreo(),
   'p-nombre': V.persona(80), 'p-ap': V.persona(80), 'p-am': V.persona(80),
   'p-fecha': V.fecha('1900-01-01', () => V.hace(18)), 'p-ubic': V.lugar(150), 'p-tel': V.telefono(false),

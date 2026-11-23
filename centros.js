@@ -6,16 +6,17 @@ menuBtn.addEventListener('click', () => { menuBtn.setAttribute('aria-expanded', 
 
 const TIPOS = ['Albergue', 'Casa hogar', 'Comedor comunitario', 'Asociación civil', 'Iglesia o parroquia', 'Otro'];
 TIPOS.forEach(t => $('f-tipo').append(new Option(t)));
+const sinAcentos = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const enlaceSeguro = u => /^https?:\/\//i.test(u) ? u : '';
 
 let centros = [];
 let cargado = false;
 
 function render() {
-  const q = $('f-buscar').value.trim().toLowerCase(), tipo = $('f-tipo').value, l = $('lista');
+  const q = sinAcentos($('f-buscar').value.trim()), tipo = $('f-tipo').value, l = $('lista');
   l.replaceChildren();
   const vis = centros.filter(c => (!tipo || c.tipo === tipo) &&
-    (c.nombre + ' ' + c.ubic + ' ' + c.urgentes.join(' ')).toLowerCase().includes(q));
+    sinAcentos(c.nombre + ' ' + c.ubic + ' ' + c.urgentes.join(' ')).includes(q));
 
   vis.forEach(c => {
     const t = el('article', 'tarjeta');
