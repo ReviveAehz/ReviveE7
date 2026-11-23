@@ -12,7 +12,6 @@
 </head>
 <body class="app">
 
-  <!-- ============ BARRA LATERAL IZQUIERDA ============ -->
   <aside class="lateral">
     <a href="centro.html" class="logo-lat">Revive</a>
     <div class="usuario">
@@ -25,13 +24,11 @@
     </nav>
   </aside>
 
-  <!-- ============ PÁGINA PRINCIPAL ============ -->
   <main class="principal">
     <h1>Hola, <span id="c-nombre">Centro de acopio</span></h1>
     <p class="relleno">Gracias por abrir las puertas de tu centro. Desde aquí puedes confirmar lo que recibes, publicar lo que necesitas y agradecer a quienes donan.</p>
     <p class="aviso" id="aviso-verif" hidden>Tu cuenta está en revisión. Aún no apareces en la lista de centros que ven los donantes.</p>
 
-    <!-- Resumen -->
     <div class="resumen">
       <div class="tarjeta stat"><strong id="s-art">0</strong>donaciones de artículos por confirmar</div>
       <div class="tarjeta stat"><strong id="s-din">0</strong>transferencias por confirmar</div>
@@ -45,7 +42,6 @@
       <button role="tab" data-tab="p-datos">Mi establecimiento</button>
     </div>
 
-    <!-- Bandeja de usuarios -->
     <div class="panel" id="p-bandeja">
       <h2>Bandeja de usuarios</h2>
       <p class="relleno">Aquí están los donantes que han elegido tu centro. Selecciona uno para ver sus donaciones, confirmarlas o quitarlo de tu bandeja.</p>
@@ -54,7 +50,6 @@
       <div class="grid g2" id="ban-lista"></div>
     </div>
 
-    <!-- Transferencias -->
     <div class="panel" id="p-din" hidden>
       <h2>Transferencias</h2>
       <p class="relleno">Revisa tu estado de cuenta y confirma cada transferencia usando la referencia y el monto. La plataforma no puede comprobar por sí sola que el dinero llegó.</p>
@@ -63,7 +58,6 @@
       <div id="din-lista"></div>
     </div>
 
-    <!-- Motivar a usuarios -->
     <div class="panel" id="p-motivar" hidden>
       <h2>Motivar a usuarios</h2>
       <p class="relleno">Muestra a un donante cómo se usó lo que donó. Elige a alguien que ya haya donado, sube hasta 5 fotos y escribe un mensaje de agradecimiento.</p>
@@ -89,7 +83,6 @@
       <div id="mo-lista"></div>
     </div>
 
-    <!-- Mi establecimiento (ver datos) -->
     <div class="panel" id="p-datos" hidden>
       <div class="panel-cab">
         <h2>Mi establecimiento</h2>
@@ -119,7 +112,6 @@
 
   <p class="gracias" id="gracias" role="status" hidden></p>
 
-  <!-- ============ VENTANA: EDITAR DATOS DEL ESTABLECIMIENTO ============ -->
   <dialog id="d-editar" class="ancho" aria-labelledby="t-editar">
     <div class="modal-cab"><h3 id="t-editar">Editar datos del establecimiento</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
     <form class="modal-cuerpo form-grid" id="f-editar">
@@ -179,7 +171,6 @@
     </form>
   </dialog>
 
-  <!-- ============ VENTANA: DETALLE DE UN DONANTE ============ -->
   <dialog id="d-usuario" class="ancho" aria-labelledby="t-usuario">
     <div class="modal-cab"><h3 id="t-usuario">Donante</h3><button type="button" data-cerrar aria-label="Cerrar">&times;</button></div>
     <div class="modal-cuerpo">

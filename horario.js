@@ -1,12 +1,3 @@
-// =====================================================================
-//  horario.js: el horario de recepción de un centro se elige con botones
-//  (días) y listas (hora de apertura y de cierre) en lugar de escribirlo.
-//  Carga después de validar.js:  <script src="horario.js"></script>
-//  El valor se guarda como texto en el mismo campo de siempre, por ejemplo:
-//     "Lunes a viernes, 09:00 a 17:00"   o   "Lunes, miércoles, sábado, 10:00 a 14:00"
-//  Horario.parse(texto) devuelve { dias: [0..6], ini, fin } (0 = lunes) o null si el
-//  texto no tiene este formato (centros anteriores a este cambio).
-// =====================================================================
 const Horario = (() => {
     const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
     const CORTO = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -48,7 +39,6 @@ const Horario = (() => {
       '.horario-horas{display:flex;flex-wrap:wrap;gap:.8rem}.horario-horas label{display:flex;align-items:center;gap:.4rem;font-weight:600}' +
       '.horario-aviso{color:#b00020;min-height:1.2em}';
   
-    // Convierte un campo (ya cambiado a type="hidden" en el HTML) en el selector con botones.
     function montar(id) {
       const campo = document.getElementById(id); if (!campo) { console.warn('horario.js: no existe ' + id); return; }
       if (!document.getElementById('horario-css')) { const s = document.createElement('style'); s.id = 'horario-css'; s.textContent = css; document.head.append(s); }
@@ -74,11 +64,10 @@ const Horario = (() => {
       const elegidos = () => botones.map((b, i) => b.getAttribute('aria-pressed') === 'true' ? i : -1).filter(i => i >= 0);
       const problema = () => !elegidos().length ? 'Elige al menos un día de recepción.'
         : minutos(ini.value) >= minutos(fin.value) ? 'La hora de apertura debe ser anterior a la de cierre.' : '';
-      function salir() {                                   // actualiza el campo oculto con el texto final
+      function salir() {
         const p = problema(); aviso.textContent = tocado ? p : '';
         valorReal.set.call(campo, p ? '' : formato(elegidos(), ini.value, fin.value));
       }
-      // Cuando otro script escribe el valor (por ejemplo al abrir «Editar datos del establecimiento»), se refleja en los botones.
       Object.defineProperty(campo, 'value', {
         get() { return valorReal.get.call(campo); },
         set(v) {
@@ -90,7 +79,7 @@ const Horario = (() => {
         }
       });
       if (campo.form) {
-        campo.form.addEventListener('submit', e => {       // se revisa antes que los demás controladores del formulario
+        campo.form.addEventListener('submit', e => {
           tocado = true; const p = problema(); salir();
           if (p) { e.preventDefault(); e.stopImmediatePropagation(); botones[0].scrollIntoView({ block: 'center' }); }
         }, true);

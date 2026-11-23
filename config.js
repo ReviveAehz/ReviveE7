@@ -22,7 +22,7 @@ async function comprimirImagen(archivo, maxLado, calidad) {
 
 async function subirArchivo(bucket, uid, archivo, nombre) {
   if (!archivo || !archivo.size) return null;
-  const err = await V.archivo(archivo, bucket === 'privado' ? V.DOC : V.IMG, 15);   // revisa el contenido real
+  const err = await V.archivo(archivo, bucket === 'privado' ? V.DOC : V.IMG, 15);
   if (err) throw V.fallo(err);
   archivo = bucket === 'privado' ? await comprimirImagen(archivo, 2000, 0.85) : await comprimirImagen(archivo, 1280, 0.8);
   const tope = archivo.type === 'application/pdf' ? 5 : 3;

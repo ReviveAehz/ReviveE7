@@ -42,7 +42,7 @@ function ajustar() {
   $('w-otro').hidden = $('a-tipo').value !== OTRO;
   $('a-otro').required = !$('w-otro').hidden;
   $('w-cad').hidden = $('a-cat').value !== 'Alimentos';
-  $('a-cad').required = !$('w-cad').hidden;               // la caducidad es obligatoria solo para alimentos
+  $('a-cad').required = !$('w-cad').hidden;
 }
 cats.forEach(c => $('a-cat').append(new Option(c)));
 llenarTipos(cats[0]); ajustar();
@@ -117,8 +117,8 @@ function llenarHoras() {
   if (f && h && !h.dias.includes((new Date(f + 'T12:00').getDay() + 6) % 7)) {
     aviso.textContent = 'Ese centro no recibe donaciones ese día. Horario: ' + c.horario + '.'; return;
   }
-  const ini = h ? h.ini : '08:00', fin = h ? h.fin : '20:00';        // centros anteriores al selector de horario: 08:00 a 20:00
-  const ahora = new Date(), limite = f === V.hoy() ? ahora.getHours() * 60 + ahora.getMinutes() + 60 : -1;   // hoy: mínimo 1 hora después de la actual
+  const ini = h ? h.ini : '08:00', fin = h ? h.fin : '20:00';
+  const ahora = new Date(), limite = f === V.hoy() ? ahora.getHours() * 60 + ahora.getMinutes() + 60 : -1;
   for (let m = Horario.minutos(ini); m < Horario.minutos(fin); m += 30) {
     if (m < limite) continue;
     const t = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
