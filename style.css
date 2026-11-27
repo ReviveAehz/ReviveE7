@@ -357,8 +357,7 @@ input[readonly] { background: var(--azul-100); color: #3b4a5a; cursor: not-allow
 .perfil .enlace { margin-top: .8rem; align-self: flex-start; }
 
 .hero-card, .ej { position: relative; }
-.hero-card { background: var(--blanco); border: 2px solid var(--negro); border-radius: var(--radio); box-shadow: 8px 8px 0 var(--azul-500); padding: 1.6rem; animation: flota 6s ease-in-out infinite; }
-@keyframes flota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.hero-card { background: var(--blanco); border: 2px solid var(--negro); border-radius: var(--radio); box-shadow: 8px 8px 0 var(--azul-500); padding: 1.6rem; }
 .hero-card h3 { margin-bottom: .1rem; }
 .hc-sub { color: #3b4a5a; margin-bottom: 0; }
 .cinta { position: absolute; top: -13px; right: 18px; background: var(--azul-500); border: 2px solid var(--negro); border-radius: 999px; font-family: var(--f-h4); font-size: .8rem; padding: .1rem .8rem; }
